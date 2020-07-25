@@ -1,0 +1,151 @@
+---
+title: "Introduction to the sarp.snowprofile package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sarp.snowprofile}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+Functions to import/export various formats of snow profiles, with basic formatting and visualization functions.
+
+```{r}
+library(sarp.snowprofile)
+```
+
+
+## 1. Snowprofile objects
+
+The package uses S3 classes for individual snow profiles (class `snowprofile`) or lists of multiple snow profiles (class `snowprofileSet`). Objects with these classes can be created, manipulated, and visualized.
+
+A `snowprofile` object contains data about a snow stratigraphy profile. It is structured as a `list` with metadata (e.g. profile name and location) and a `data.frame` containing layer properties. Mandatory parts of a `snowprofile` object include:
+
+- `station` and `station_id` provide a profile name
+- `datetime` timestamp
+- `latlon`, `elev`, `angle`, `aspect` location information
+- `hs` total snow height
+- `layers` a `data.frame` of class `snowprofileLayers` that contains layer properties (each row is a layer and each column is a property such as depth or grain size). 
+
+A `snowprofileSet` object is simply a `list` of multiple `snowprofile` objects.
+
+The package includes sample data packaged into three `snowprofileSet` objects:
+
+- `SPgroup` contains 12 profiles from different locations with the same timestamp
+- `SPtimeline` contains 11 profiles from the same location with different timestamps
+- `SPpairs` contains various other snow profiles
+
+```{r}
+## Print the structure of a single `snowprofile` object
+Profile <- SPpairs$C_day1
+str(Profile)
+```
+
+## 2. Profile creation
+
+The package includes functions to create a `snowprofile` object by importing common file formats as well as provides constructor functions to manually create a `snowprofile`.
+
+### 2.1 Import profiles from file
+
+Import functions for generic snow profiles include::
+
+- CAAML (`snowprofileCaaml`)
+- csv (`snowprofileCsv`)
+
+and import functions for simulated profiles produced with the snow cover model [SNOWPACK](https://models.slf.ch/p/snowpack/) include:
+
+- prf (`snowprofilePrf`)
+- pro (`snowprofilePro`)
+- sno (`snowprofileSno`)
+
+Note that prf and pro files contain multiple profiles and thus the import functions return a `snowprofileSet`, while CAAML, csv, and sno files return a single `snowprofile`.
+
+```{r}
+## Import a CAAML file
+# Filename <- "path/to/file.caaml"
+# Profile <- snowprofileCaaml(Filename)
+
+# ## Import all profiles from a directory of CAAML files and create a `snowprofileSet`
+# CaamlFiles <- list.files('path/to/caamlprofiles', full.names = T)
+# Profiles <- lapply(CaamlFiles, snowprofileCaaml)
+# Profiles <- snowprofileSet(Profiles)
+```
+
+An additional parser `readSmet` is also provided to read  other input and output files from SNOWPACK.
+
+### 2.2 Manually construct profiles
+
+To manually create a `snowprofile` object see the help pages for the constructor functions `snowprofile()` and `snowprofileLayers()` where metadata and layer properties are provided as function arguments.
+
+### 2.3 Formatting profiles
+
+Import and constructor functions perform several validation checks for consistent structure (e.g. variable names, consistent layer thickness/depth/height). Sometimes profiles may be malformatted (e.g. files have different formatting than the functions in this package, future changes to this R package), so this package provides functions for checking profiles for formatting discrepancies and reformatting them if necessary. `validate_snowprofile` raises errors (or silently print error messages) in case of formatting discrepancies and `reformat_snowprofile` can conveniently correct data types or rename metadata / layer properties. See examples in the help files for these functions for examples of how it identify and correct errors in malformatted profiles 
+
+
+## 3. Profile manipulation
+
+`print`, `summary`, and `rbind` methods exist to summarize and extract contents from `snowprofile` and `snowprofileSet` objects.
+
+### 3.1 Print
+
+Print contents of a `snowprofile` to the console.
+
+```{r}
+Profile <- SPpairs$A_manual
+print(Profile)
+```
+
+### 3.2 Summary
+
+Extract metadata from a single profile or set of profiles into a `data.frame`.
+
+```{r}
+summary(Profile)
+summary(SPgroup)
+```
+
+Summary methods are useful to extract subsets of a `snowprofileSet` based on some attribute (e.g. location, time).
+
+```{r}
+## Subset all profiles from SPgroup with elevation > 2000 m
+Metadata <- summary(SPgroup)
+Alpine <- SPgroup[Metadata$elev > 2000]
+print(paste(length(Alpine), 'of', length(SPgroup), 'profiles in SPgroup are above 2000 m'))
+```
+
+### 3.3 Rbind
+
+`rbind` methods merge metadata and layer properties from one or many profiles into a large `data.frame` that is convenient for analysis tasks.
+
+```{r}
+## Rbind SPgroup 
+TabularProfile <- rbind(SPgroup)
+names(TabularProfile)
+
+## Tabulate all grain types
+table(TabularProfile$gtype)
+
+## Get elevations of profiles with SH layers > 5 mm
+SH_layers <- subset(TabularProfile, gtype == 'SH' & gsize > 5)
+sort(SH_layers$elev)
+```
+
+
+
+## 4. Profile visualization
+
+Plot methods exist for individual profiles and sets of profiles:
+
+- `plot.snowprofile` produces a hardness profile for a single `snowprofile` object
+- `plot.snowprofileSet` produces several types of plots for a `snowprofileSet` including timelines and side-by-side stratigraphies
+
+```{r}
+## Plot a single hardness profile
+plot(Profile)
+## Plot a timeline
+plot(SPtimeline)
+## Plot all profiles in the group and sort by height
+plot(SPgroup, SortMethod = 'hs')
+```
+
+The package also includes several `getColour...` and `setColour...` functions to define colour palettes for various profile properties.

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to the sarp.snowprofile package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the sarp.snowprofile package</h1>
+
+
+
+<p>Functions to import/export various formats of snow profiles, with basic formatting and visualization functions.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(sarp.snowprofile)</span></code></pre></div>
+<div id="snowprofile-objects" class="section level2">
+<h2>1. Snowprofile objects</h2>
+<p>The package uses S3 classes for individual snow profiles (class <code>snowprofile</code>) or lists of multiple snow profiles (class <code>snowprofileSet</code>). Objects with these classes can be created, manipulated, and visualized.</p>
+<p>A <code>snowprofile</code> object contains data about a snow stratigraphy profile. It is structured as a <code>list</code> with metadata (e.g. profile name and location) and a <code>data.frame</code> containing layer properties. Mandatory parts of a <code>snowprofile</code> object include:</p>
+<ul>
+<li><code>station</code> and <code>station_id</code> provide a profile name</li>
+<li><code>datetime</code> timestamp</li>
+<li><code>latlon</code>, <code>elev</code>, <code>angle</code>, <code>aspect</code> location information</li>
+<li><code>hs</code> total snow height</li>
+<li><code>layers</code> a <code>data.frame</code> of class <code>snowprofileLayers</code> that contains layer properties (each row is a layer and each column is a property such as depth or grain size).</li>
+</ul>
+<p>A <code>snowprofileSet</code> object is simply a <code>list</code> of multiple <code>snowprofile</code> objects.</p>
+<p>The package includes sample data packaged into three <code>snowprofileSet</code> objects:</p>
+<ul>
+<li><code>SPgroup</code> contains 12 profiles from different locations with the same timestamp</li>
+<li><code>SPtimeline</code> contains 11 profiles from the same location with different timestamps</li>
+<li><code>SPpairs</code> contains various other snow profiles</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## Print the structure of a single `snowprofile` object</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>Profile &lt;-<span class="st"> </span>SPpairs<span class="op">$</span>C_day1</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">str</span>(Profile)</span></code></pre></div>
+<pre><code>## List of 13
+##  $ station   : int 112233
+##  $ station_id: chr &quot;VIR112233&quot;
+##  $ datetime  : POSIXct[1:1], format: &quot;2018-11-21 06:00:00&quot;
+##  $ latlon    : num [1, 1:2] 52.3 -119
+##   ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. ..$ : chr &quot;&quot;
+##   .. ..$ : chr [1:2] &quot;latitude&quot; &quot;longitude&quot;
+##  $ elev      : int 1917
+##  $ angle     : num 0
+##  $ aspect    : num 0
+##  $ hs        : num 111
+##  $ type      : chr &quot;vstation&quot;
+##  $ layers    :Classes &#39;snowprofileLayers&#39; and &#39;data.frame&#39;:  30 obs. of  11 variables:
+##   ..$ height     : num [1:30] 1.8 3.54 5.08 5.42 6.83 ...
+##   ..$ ddate      : POSIXct[1:30], format: &quot;2018-09-12 18:00:00&quot; &quot;2018-09-15 18:00:00&quot; ...
+##   ..$ density    : int [1:30] 422 354 408 332 404 357 313 294 312 359 ...
+##   ..$ temperature: num [1:30] -0.1 -0.1 -0.2 -0.2 -0.3 -1 -1.1 -1.1 -1.4 -1.5 ...
+##   ..$ lwc        : int [1:30] 0 0 0 0 0 0 0 0 0 0 ...
+##   ..$ gsize      : num [1:30] 1.37 1.62 0.96 1.69 0.82 0.98 1.38 1.93 1.25 1.32 ...
+##   ..$ hardness   : num [1:30] 4 5 4 2 4 5 5 5 2.15 3 ...
+##   ..$ ssi        : num [1:30] 5.43 3.93 1.37 1.39 4.12 5.59 4.68 1.57 3.4 3.03 ...
+##   ..$ gtype      : Factor w/ 8 levels &quot;DF&quot;,&quot;DH&quot;,&quot;FC&quot;,..: 5 6 4 2 4 6 6 6 3 4 ...
+##   ..$ depth      : num [1:30] 109 107 106 105 104 ...
+##   ..$ thickness  : num [1:30] 1.8 1.74 1.54 0.34 1.41 ...
+##  $ zone      : chr &quot;BONE_NORTH&quot;
+##  $ band      : chr &quot;TL&quot;
+##  $ date      : Date[1:1], format: &quot;2018-11-21&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;snowprofile&quot;</code></pre>
+</div>
+<div id="profile-creation" class="section level2">
+<h2>2. Profile creation</h2>
+<p>The package includes functions to create a <code>snowprofile</code> object by importing common file formats as well as provides constructor functions to manually create a <code>snowprofile</code>.</p>
+<div id="import-profiles-from-file" class="section level3">
+<h3>2.1 Import profiles from file</h3>
+<p>Import functions for generic snow profiles include::</p>
+<ul>
+<li>CAAML (<code>snowprofileCaaml</code>)</li>
+<li>csv (<code>snowprofileCsv</code>)</li>
+</ul>
+<p>and import functions for simulated profiles produced with the snow cover model <a href="https://models.slf.ch/p/snowpack/">SNOWPACK</a> include:</p>
+<ul>
+<li>prf (<code>snowprofilePrf</code>)</li>
+<li>pro (<code>snowprofilePro</code>)</li>
+<li>sno (<code>snowprofileSno</code>)</li>
+</ul>
+<p>Note that prf and pro files contain multiple profiles and thus the import functions return a <code>snowprofileSet</code>, while CAAML, csv, and sno files return a single <code>snowprofile</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## Import a CAAML file</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co"># Filename &lt;- &quot;path/to/file.caaml&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># Profile &lt;- snowprofileCaaml(Filename)</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># ## Import all profiles from a directory of CAAML files and create a `snowprofileSet`</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co"># CaamlFiles &lt;- list.files(&#39;path/to/caamlprofiles&#39;, full.names = T)</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># Profiles &lt;- lapply(CaamlFiles, snowprofileCaaml)</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># Profiles &lt;- snowprofileSet(Profiles)</span></span></code></pre></div>
+<p>An additional parser <code>readSmet</code> is also provided to read other input and output files from SNOWPACK.</p>
+</div>
+<div id="manually-construct-profiles" class="section level3">
+<h3>2.2 Manually construct profiles</h3>
+<p>To manually create a <code>snowprofile</code> object see the help pages for the constructor functions <code>snowprofile()</code> and <code>snowprofileLayers()</code> where metadata and layer properties are provided as function arguments.</p>
+</div>
+<div id="formatting-profiles" class="section level3">
+<h3>2.3 Formatting profiles</h3>
+<p>Import and constructor functions perform several validation checks for consistent structure (e.g. variable names, consistent layer thickness/depth/height). Sometimes profiles may be malformatted (e.g. files have different formatting than the functions in this package, future changes to this R package), so this package provides functions for checking profiles for formatting discrepancies and reformatting them if necessary. <code>validate_snowprofile</code> raises errors (or silently print error messages) in case of formatting discrepancies and <code>reformat_snowprofile</code> can conveniently correct data types or rename metadata / layer properties. See examples in the help files for these functions for examples of how it identify and correct errors in malformatted profiles</p>
+</div>
+</div>
+<div id="profile-manipulation" class="section level2">
+<h2>3. Profile manipulation</h2>
+<p><code>print</code>, <code>summary</code>, and <code>rbind</code> methods exist to summarize and extract contents from <code>snowprofile</code> and <code>snowprofileSet</code> objects.</p>
+<div id="print" class="section level3">
+<h3>3.1 Print</h3>
+<p>Print contents of a <code>snowprofile</code> to the console.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>Profile &lt;-<span class="st"> </span>SPpairs<span class="op">$</span>A_manual</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">print</span>(Profile)</span></code></pre></div>
+<pre><code>##                                    MetaData
+## station                   SarpOfficeStation
+## station_id                    niviz_station
+## datetime                2019-02-22 09:24:00
+## latlon              49.2765643 -122.9139272
+## elev                                    339
+## angle                                    38
+## aspect                                  180
+## hs                                      260
+## type                                 manual
+## observer                            Sarp|FH
+## comment_general  don&#39;t feel like commenting
+## comment_location            test caaml file
+## date                             2019-02-22
+##    depth thickness height hardness gtype gsize_avg gsize_max lwc gtype_sec
+## 1    250        10     10     5.00  MFcr       1.5       1.5   D      &lt;NA&gt;
+## 2    230        20     30     3.00    FC       2.0       2.0   D      &lt;NA&gt;
+## 3    220        10     40     5.00  MFcr       1.5       1.5   D      &lt;NA&gt;
+## 4    157        63    103     4.00    RG       0.3       0.3   D      &lt;NA&gt;
+## 5    155         5    105     2.00    SH       5.0       5.0   D      &lt;NA&gt;
+## 6     95        60    165     4.00    RG       0.3       0.3   D      &lt;NA&gt;
+## 7     75        20    185     3.00    RG       0.3       0.3   D      &lt;NA&gt;
+## 8     60        15    200     1.00    FC       2.0       2.0   D      &lt;NA&gt;
+## 9     42        18    218     2.00    RG       1.0       1.0   D      &lt;NA&gt;
+## 10    40         2    220     1.50    FC       2.0       2.5   D      &lt;NA&gt;
+## 11    38         2    222     1.00    SH       5.0       5.0   D        DH
+## 12     0        35    260     1.25    DF       1.5       1.5   D      &lt;NA&gt;
+##                  ddate
+## 1                 &lt;NA&gt;
+## 2                 &lt;NA&gt;
+## 3                 &lt;NA&gt;
+## 4                 &lt;NA&gt;
+## 5                 &lt;NA&gt;
+## 6                 &lt;NA&gt;
+## 7                 &lt;NA&gt;
+## 8                 &lt;NA&gt;
+## 9                 &lt;NA&gt;
+## 10                &lt;NA&gt;
+## 11 2019-02-20 01:00:00
+## 12                &lt;NA&gt;</code></pre>
+</div>
+<div id="summary" class="section level3">
+<h3>3.2 Summary</h3>
+<p>Extract metadata from a single profile or set of profiles into a <code>data.frame</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">summary</span>(Profile)</span></code></pre></div>
+<pre><code>##             station    station_id            datetime      lat       lon elev
+## 1 SarpOfficeStation niviz_station 2019-02-22 09:24:00 49.27656 -122.9139  339
+##   angle aspect  hs   type nLayers observer            comment_general
+## 1    38    180 260 manual      12  Sarp|FH don&#39;t feel like commenting
+##   comment_location       date
+## 1  test caaml file 2019-02-22</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">summary</span>(SPgroup)</span></code></pre></div>
+<pre><code>##    station station_id            datetime     lat      lon elev angle aspect
+## 1   116093  VIR116093 2019-02-02 06:00:00 52.4650 -118.993 1907     0      0
+## 2   116094  VIR116094 2019-02-02 06:00:00 52.4692 -118.959 1979     0      0
+## 3   116095  VIR116095 2019-02-02 06:00:00 52.4733 -118.924 2011     0      0
+## 4   116096  VIR116096 2019-02-02 06:00:00 52.4774 -118.889 1859     0      0
+## 5   116643  VIR116643 2019-02-02 06:00:00 52.4821 -119.035 1867     0      0
+## 6   116644  VIR116644 2019-02-02 06:00:00 52.4863 -119.000 1969     0      0
+## 7   116645  VIR116645 2019-02-02 06:00:00 52.4904 -118.965 2019     0      0
+## 8   116646  VIR116646 2019-02-02 06:00:00 52.4945 -118.931 1983     0      0
+## 9   117194  VIR117194 2019-02-02 06:00:00 52.5033 -119.042 1915     0      0
+## 10  117197  VIR117197 2019-02-02 06:00:00 52.5157 -118.937 1941     0      0
+## 11  117746  VIR117746 2019-02-02 06:00:00 52.5287 -119.014 1911     0      0
+## 12  117747  VIR117747 2019-02-02 06:00:00 52.5328 -118.979 1957     0      0
+##        hs     type nLayers    zone band       date
+## 1  156.48 vstation      50 ALBREDA   TL 2019-02-02
+## 2  150.41 vstation      44 ALBREDA   TL 2019-02-02
+## 3  117.89 vstation      35 ALBREDA   TL 2019-02-02
+## 4  102.42 vstation      35 ALBREDA   TL 2019-02-02
+## 5  179.87 vstation      45 ALBREDA   TL 2019-02-02
+## 6  179.22 vstation      55 ALBREDA   TL 2019-02-02
+## 7  156.85 vstation      39 ALBREDA   TL 2019-02-02
+## 8  113.26 vstation      32 ALBREDA   TL 2019-02-02
+## 9  156.02 vstation      44 ALBREDA   TL 2019-02-02
+## 10 116.94 vstation      37 ALBREDA   TL 2019-02-02
+## 11 142.78 vstation      41 ALBREDA   TL 2019-02-02
+## 12 128.56 vstation      34 ALBREDA   TL 2019-02-02</code></pre>
+<p>Summary methods are useful to extract subsets of a <code>snowprofileSet</code> based on some attribute (e.g. location, time).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">## Subset all profiles from SPgroup with elevation &gt; 2000 m</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>Metadata &lt;-<span class="st"> </span><span class="kw">summary</span>(SPgroup)</span>
+<span id="cb11-3"><a href="#cb11-3"></a>Alpine &lt;-<span class="st"> </span>SPgroup[Metadata<span class="op">$</span>elev <span class="op">&gt;</span><span class="st"> </span><span class="dv">2000</span>]</span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">print</span>(<span class="kw">paste</span>(<span class="kw">length</span>(Alpine), <span class="st">&#39;of&#39;</span>, <span class="kw">length</span>(SPgroup), <span class="st">&#39;profiles in SPgroup are above 2000 m&#39;</span>))</span></code></pre></div>
+<pre><code>## [1] &quot;2 of 12 profiles in SPgroup are above 2000 m&quot;</code></pre>
+</div>
+<div id="rbind" class="section level3">
+<h3>3.3 Rbind</h3>
+<p><code>rbind</code> methods merge metadata and layer properties from one or many profiles into a large <code>data.frame</code> that is convenient for analysis tasks.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">## Rbind SPgroup </span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>TabularProfile &lt;-<span class="st"> </span><span class="kw">rbind</span>(SPgroup)</span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">names</span>(TabularProfile)</span></code></pre></div>
+<pre><code>##  [1] &quot;station&quot;     &quot;station_id&quot;  &quot;datetime&quot;    &quot;lat&quot;         &quot;lon&quot;        
+##  [6] &quot;elev&quot;        &quot;angle&quot;       &quot;aspect&quot;      &quot;hs&quot;          &quot;type&quot;       
+## [11] &quot;nLayers&quot;     &quot;zone&quot;        &quot;band&quot;        &quot;date&quot;        &quot;height&quot;     
+## [16] &quot;ddate&quot;       &quot;density&quot;     &quot;temperature&quot; &quot;lwc&quot;         &quot;gtype&quot;      
+## [21] &quot;hardness&quot;    &quot;ssi&quot;         &quot;gsize&quot;       &quot;depth&quot;       &quot;thickness&quot;</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">## Tabulate all grain types</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">table</span>(TabularProfile<span class="op">$</span>gtype)</span></code></pre></div>
+<pre><code>## 
+##   DF   DH   FC FCxr   MF MFcr   PP   RG   SH 
+##   29   45  148   96    1   73   24   63   12</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">## Get elevations of profiles with SH layers &gt; 5 mm</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>SH_layers &lt;-<span class="st"> </span><span class="kw">subset</span>(TabularProfile, gtype <span class="op">==</span><span class="st"> &#39;SH&#39;</span> <span class="op">&amp;</span><span class="st"> </span>gsize <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="kw">sort</span>(SH_layers<span class="op">$</span>elev)</span></code></pre></div>
+<pre><code>## [1] 1859 1911 1941 1957</code></pre>
+</div>
+</div>
+<div id="profile-visualization" class="section level2">
+<h2>4. Profile visualization</h2>
+<p>Plot methods exist for individual profiles and sets of profiles:</p>
+<ul>
+<li><code>plot.snowprofile</code> produces a hardness profile for a single <code>snowprofile</code> object</li>
+<li><code>plot.snowprofileSet</code> produces several types of plots for a <code>snowprofileSet</code> including timelines and side-by-side stratigraphies</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">## Plot a single hardness profile</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="kw">plot</span>(Profile)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co">## Plot a timeline</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">plot</span>(SPtimeline)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co">## Plot all profiles in the group and sort by height</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">plot</span>(SPgroup, <span class="dt">SortMethod =</span> <span class="st">&#39;hs&#39;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The package also includes several <code>getColour...</code> and <code>setColour...</code> functions to define colour palettes for various profile properties.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
