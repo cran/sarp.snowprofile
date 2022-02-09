@@ -6,21 +6,30 @@
 \usage{
 \method{plot}{snowprofileSet}(
   x,
-  SortMethod = "time",
-  ColParam = "gtype",
+  SortMethod = c("time", "unsorted", "hs", "elev", "presorted"),
+  ColParam = c("gtype", "hardness", "temperature", "density", "gsize"),
   TopDown = FALSE,
   DateStart = NA,
   DateEnd = NA,
+  Timeseries_labels = c("weekly", "monthly", NA),
   ylim = NULL,
   OutlineLyrs = FALSE,
+  OutlineProfile = NULL,
   HorizGrid = TRUE,
+  yaxis = TRUE,
   main = NA,
   ylab = NA,
   xlab = NA,
   box = TRUE,
-  labelOriginalIndices = FALSE,
+  xticklabels = FALSE,
+  xtick.las = 2,
   yPadding = 10,
   xPadding = 0.5,
+  hardnessResidual = 1,
+  hardnessScale = 1,
+  hardnessOffset = -0.5,
+  k = NULL,
+  offset = as.Date(NA),
   ...
 )
 }
@@ -37,11 +46,18 @@
 
 \item{DateEnd}{End date for timeseries plots (\code{SortMethod = 'time'}). If not provided, the function takes the date range from Profiles (default = NA).}
 
+\item{Timeseries_labels}{Label Saturdays "weekly", "monthly", or \code{NA}}
+
 \item{ylim}{Vertical range of plot}
 
 \item{OutlineLyrs}{Switch for outlining layers (default = FALSE)}
 
+\item{OutlineProfile}{vector of profile indices that will be outlined to highlight them}
+
 \item{HorizGrid}{Draw horizontal grid at layer heights (default = TRUE)}
+
+\item{yaxis}{draw a y-axis? (either \code{FALSE}, \code{TRUE} draws yaxis left, \code{"right"} draws yaxis on the right plot side)
+\emph{Note} that in case of \code{"right"} you need to adjust \code{par(mar = ...)}, disable \code{ylab} and manually draw an xlab with \code{mtext}.}
 
 \item{main}{Main title}
 
@@ -51,7 +67,9 @@
 
 \item{box}{Draw a box around the plot (default = TRUE)}
 
-\item{labelOriginalIndices}{Label the original (i.e. prior to sorting) indices of the profiles at the x-axis? (default = FALSE)}
+\item{xticklabels}{Label the profiles with their "names", "originalIndices" (prior to sorting), "dates", or a custom character array}
+
+\item{xtick.las}{Orientation of labels if xticklabels is specified.}
 
 \item{yPadding}{Padding between ylim and limits of data, default = 10.
 Note that R will still put padding by default. If you want to prohibit that entirely, specify \code{xaxs ='i'}, or \code{yaxs = 'i'}.}
@@ -59,10 +77,28 @@ Note that R will still put padding by default. If you want to prohibit that enti
 \item{xPadding}{Padding between xlim and limits of data, default = 0.5.
 Note that R will still put padding by default. If you want to prohibit that entirely, specify \code{xaxs = 'i'}, or \code{yaxs = 'i'}.}
 
+\item{hardnessResidual}{Value within \verb{[0, 1]} to control the minimum horizontal space of each layer that will be colored
+irrespective of the layer's hardness. A value of \code{1} corresponds to no hardness being shown.}
+
+\item{hardnessScale}{A scaling factor that exaggerates the hardness profile to subsequent cells on the x-axis. Useful
+for time series of sparse profile observations. Note that this scaling factor is unused when \code{hardnessScale = 1} and that
+it gets more influential the smaller \code{hardnessScale} gets. Also note, that a \code{hardnessScale > 1} can lead to profiles overlapping.}
+
+\item{hardnessOffset}{offsets the profile location on the x-axis}
+
+\item{k}{a sorting vector if \code{SortMethod = "presorted"}.}
+
+\item{offset}{Provide a Date or POSIXct offset if you want to offset the vertical snow height/depth axis so that the offset date aligns with snow depth/height 0.}
+
 \item{...}{Additional parameters passed to plot()}
 }
 \description{
-A flexible function to plot multiple snowprofiles either in a timeseries or various types of groups
+A flexible function to plot multiple snowprofiles either in a timeseries or various types of groups.
+}
+\details{
+The routine allows you to plot colored sequences only, or to include hardness profile information as well. See parameter
+\code{hardnessResidual} and the examples for more details.
+To change the font size of labels etc, use \code{par()} with the parameters \code{cex.lab}, \code{cex.axis}, etc.
 }
 \examples{
 
@@ -84,14 +120,26 @@ plot(SPtimeline, TopDown = TRUE)
 plot(SPtimeline, DateEnd = '2017-12-17')
 plot(SPtimeline, DateStart = '2017-12-15', DateEnd = '2017-12-17')
 
+## Show hardness profile, too:
+plot(SPtimeline, hardnessResidual = 0.5)
+
 ## Additional examples of plot dimensions and labelling
 ## Label the indices of the profiles in the list:
-plot(SPgroup, SortMethod = 'elev', labelOriginalIndices = TRUE)
-##  ... and with minimized axis limits:
-plot(SPgroup, SortMethod = 'elev', labelOriginalIndices = TRUE,
+plot(SPgroup, SortMethod = 'elev', xticklabels = "originalIndices")
+##  ... and with minimized axis limits and their station ID names:
+plot(SPgroup, SortMethod = 'elev', xticklabels = sapply(SPgroup, function(x) x$station_id),
        yPadding = 0, xPadding = 0, xaxs = 'i', yaxs = 'i')
 ##  sorted by depth, and without box:
 plot(SPgroup, SortMethod = 'hs', TopDown = TRUE, box = FALSE)
+
+## Apply a date offset to investigate which layers formed around that day of interest:
+pwl_exists <- sapply(SPgroup, function(sp)
+  {length(findPWL(sp, pwl_date = "2019-01-21", pwl_gtype = c("SH", "DH"),
+                  date_range_earlier = as.difftime(2, unit = "days"))) > 0})
+k <- order(pwl_exists, decreasing = TRUE)
+plot(SPgroup, SortMethod = 'presorted', k = k, xticklabels = "originalIndices",
+     offset = as.Date("2019-01-21"), xlab = "<-- Jan 21 PWL exists | does not exist -->")
+abline(v = max(which(pwl_exists[k]))+0.5, lty = "dashed")
 
 }
 \seealso{

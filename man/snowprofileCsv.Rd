@@ -12,7 +12,8 @@ snowprofileCsv(
   height = "height",
   gtype = "gtype",
   hardness = "hardness",
-  ...
+  ...,
+  crust.val = 2
 )
 }
 \arguments{
@@ -23,8 +24,8 @@ snowprofileCsv(
 \item{sep}{csv column separator as string}
 
 \item{use.swisscode}{boolean; are grain types given as (numeric) \code{swisscode} (\code{TRUE}) or as character strings (\code{FALSE})? If \code{TRUE}, grain types can be given
-as three-digit code (gt1|gt2|crust), or as one-digit code specifying the primary grain type \emph{if} another column is provided that specifies crusts.
-See Examples for more information.}
+as three-digit code (gt1|gt2|gt3), or as one-digit code specifying the primary grain type \emph{if} another column is provided that specifies crusts.
+See Details and Examples for more information.}
 
 \item{height}{character string referring to the csv column of the top layer interfaces}
 
@@ -37,6 +38,8 @@ See Examples for more information.}
 \item profile specific info: \code{station}, \code{station_id}, \code{datetime}, \code{latlon}, \code{elev}, \code{angle}, \code{aspect}, \code{type} (see \link{snowprofile})
 \item layer specific info: deposition date, grain size, ssi, ... (see \link{snowprofileLayers})
 }}
+
+\item{crust.val}{If a column 'crust' is provided, what value of 'crust' defines MFcr? Mostly, either 2 (default) or 1. See Details.}
 }
 \value{
 snowprofile object
@@ -50,6 +53,12 @@ a depth vector is not supported.
 
 If profile specific information is provided in the csv table, it can only be included into the snowprofile object through the exact field names (see above).
 However, layer specific information can be named arbitrarily (except for the three required fields).
+
+Regarding \strong{swisscode}: The SNOWPACK documentation specifies that MFcr are encoded as (gt1|gt2|gt3) = (7|x|2), i.e. gt1 == 7 and gt3 == 2. This is
+also how this routine handles the grain type encoding per default. However, some csv tables might be provided using swisscode encoding and
+providing gt1, gt2, and gt3 as individual one-digit columns. In those cases, gt3 could be defined as a boolean (0 or 1), where gt1 == 7 and gt3 == 1
+represent crusts, instead of the aforementioned standard definition of gt1 == 7 and gt3 == 2. To handle these cases, \code{crust.val} can be set to 1, instead
+of its default \code{crust.val = 2}.
 }
 \examples{
 ## imagine a csv table with a very straightforward format,
@@ -70,11 +79,13 @@ profile
 write.csv(DF, file = file.path(tempdir(), 'file.csv'))
 
 profile <- snowprofileCsv(file.path(tempdir(), 'file.csv'), height = 'layer_top', gtype = 'gt1',
-                          use.swisscode = TRUE, gsize = 'gs')
+                          use.swisscode = TRUE, gsize = 'gs', crust.val = 1)
 profile
 ## Note that the csv column 'crust', which specifies whether a MF layer is actually
 #  a MFcr layer, is already named correctly (i.e., 'crust'). If it were named 'freeze-crust',
 #  we would need to add to the function call: `crust = 'freeze-crust'`.
+# Also note, that we need to provide `crust.val = 1`, since we're not using the standard definition
+# of swisscode MFcr encoding (see Details).
 
 ## let's assume you want to read the csv file an customize some names, e.g. GrainSIZE:
 profile <- snowprofileCsv(file.path(tempdir(), 'file.csv'), height = 'layer_top', gtype = 'gt1',
@@ -85,6 +96,9 @@ profile
 #  meta information, e.g. station_id, can not! I.e. you need to use the prescribed names.
 
 
+}
+\seealso{
+\link{snowprofileCsv_advanced}
 }
 \author{
 fherla

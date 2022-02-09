@@ -7,21 +7,32 @@
 \method{plot}{snowprofile}(
   x,
   TempProfile = TRUE,
-  Col = sapply(x$layers$gtype, getColoursGrainType),
-  TopDown = FALSE,
+  xlimTemp = NULL,
+  Col = "auto",
+  TopDown = "auto",
   axes = TRUE,
   xlab = "",
   emphasizeLayers = FALSE,
   emphasis = "95",
   failureLayers = FALSE,
   failureLayers.cex = 1,
+  failureLayers.col = "red",
+  nYTicks = 4,
+  ymax = max(c(x$maxObservedDepth, x$hs), na.rm = TRUE),
+  alignWithBottomUpPlot = FALSE,
+  highlightUnobservedBasalLayers = TRUE,
+  label.datetags = FALSE,
   ...
 )
 }
 \arguments{
 \item{x}{\link{snowprofile} object}
 
-\item{TempProfile}{draw unscaled temperature profile (default = TRUE)}
+\item{TempProfile}{draw unscaled temperature profile (default = TRUE)? Temperature data needs to be included in the
+snowprofile object either under \code{x$layers$temperature}, or in a separate \code{x$temperatureProfile} data.frame providing
+a vertical grid independent from the snow layers.}
+
+\item{xlimTemp}{the x limits in degrees Celsius for the temperature profile (if left empty it scales to the range of temperature values)}
 
 \item{Col}{vector of colours corresponding to the grain types in the profile (defaults to a lookup table)}
 
@@ -35,9 +46,21 @@
 
 \item{emphasis}{2 digit quoted number between \code{'01'}-\code{'99'} to control the degree of emphasis; the higher the stronger}
 
-\item{failureLayers}{height vector of failure layers that will be indicated with a red arrow}
+\item{failureLayers}{height vector of failure layers that will be indicated with an arrow}
 
 \item{failureLayers.cex}{factor to shrink or enlarge the arrow}
+
+\item{failureLayers.col}{color of arrow, can also be a vector of same length as \code{failureLayers} to color different arrows differently}
+
+\item{nYTicks}{number of tick marks at yaxis}
+
+\item{ymax}{the maximum ylim value}
+
+\item{alignWithBottomUpPlot}{useful when aligning the yaxis grids of bottom up profileSet plots and top down hardness plots.}
+
+\item{highlightUnobservedBasalLayers}{draw sine wave at lowest observed layer to highlight unobserved layers below}
+
+\item{label.datetags}{label the datetags of the snowprofile layers? (Won't produce a pretty plot, but give you some more information for analysis)}
 
 \item{...}{other parameters to barplot}
 }
@@ -52,6 +75,14 @@ plot(SPpairs$A_manual, emphasizeLayers = c(5, 11),
      failureLayers = SPpairs$A_manual$layers$height[5], failureLayers.cex = 1.5)
 plot(SPpairs$A_manual, emphasizeLayers = 'SH')
 plot(SPpairs$A_manual, TopDown = TRUE)
+plot(SPpairs$A_modeled, TempProfile = TRUE, xlimTemp = c(-30,10))
+
+# highlight unobserved basal layers:
+plot(snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                                               hardness = c(2, 3, 1),
+                                               gtype = c('FC', NA, 'PP'),
+                                               hs = 70,
+                                               maxObservedDepth = 50)), TopDown = TRUE, ymax = 80)
 
 }
 \seealso{

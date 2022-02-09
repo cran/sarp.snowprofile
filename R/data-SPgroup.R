@@ -8,10 +8,11 @@
 #'
 #' @keywords snowprofile object
 #'
-#' @seealso [SPpairs], [SPtimeline]
+#' @seealso [SPpairs], [SPtimeline], [plot.snowprofileSet]
 #'
 #' @examples
 #'
-#' plot(SPgroup, SortMethod = 'unsorted', labelOriginalIndices = TRUE)
+#' plot(SPgroup, SortMethod = 'unsorted', xticklabels = "originalIndices")
+#' plot(SPgroup, SortMethod = 'hs', xticklabels = "originalIndices")
 #'
 "SPgroup"

@@ -8,6 +8,7 @@ format_snowprofileLayers(
   obj,
   target = "all",
   hs = NA,
+  maxObservedDepth = NA,
   validate = TRUE,
   dropNAs = TRUE
 )
@@ -18,6 +19,9 @@ format_snowprofileLayers(
 \item{target}{string, indicating which fields are auto-filled ('all', 'height', 'depth', 'thickness', 'none')}
 
 \item{hs}{total snow height (cm) if not deductible from given fields}
+
+\item{maxObservedDepth}{the observed depth of the profile from the snow surface downwards.
+Will only be used, if no \code{height} or \code{thickness} exist in \code{obj}, or if \code{hs} is not given.}
 
 \item{validate}{Validate \code{obj} with \link{validate_snowprofileLayers}?}
 

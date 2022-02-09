@@ -13,10 +13,17 @@ new_snowprofile(
   angle = double(),
   aspect = double(),
   hs = double(),
+  maxObservedDepth = double(),
   type = character(),
   band = character(),
   zone = character(),
-  layers = snowprofileLayers()
+  comment = character(),
+  hn24 = double(),
+  hn72 = double(),
+  ski_pen = double(),
+  layers = snowprofileLayers(),
+  tests = snowprofileTests(),
+  instabilitySigns = snowprofileInstabilitySigns()
 )
 }
 \arguments{
@@ -25,7 +32,7 @@ new_snowprofile(
 \item{station_id}{character string}
 
 \item{datetime}{date and time as class POSIXct in most meaningful timezone (timezone can be converted very easily:
-e.g. \code{print(profile$datetime, tz = 'EST')} defaults to \code{'1999-12-31 UTC'}}
+e.g. \code{print(profile$datetime, tz = 'EST')}.}
 
 \item{latlon}{2-element vector latitude (first), longitude (second)}
 
@@ -37,13 +44,28 @@ e.g. \code{print(profile$datetime, tz = 'EST')} defaults to \code{'1999-12-31 UT
 
 \item{hs}{total snow height (cm); if not provided, the field will be derived from the profile layers.}
 
-\item{type}{character string, must be either 'manual', 'vstation' or 'aggregate'}
+\item{maxObservedDepth}{equivalent to \code{hs} for full profiles that go down to the ground. for test profiles that only
+observe the upper part of the snowpack this value refers to the maximum depth of the profile observation.}
+
+\item{type}{character string, must be either 'manual', 'modeled', 'vstation', 'aggregate', or 'whiteboard'}
 
 \item{band}{character string describing elevation band as ALP, TL, BTL (alpine, treeline, below treeline)}
 
 \item{zone}{character string describing the zone or region of the profile location (e.g., BURNABY_MTN)}
 
+\item{comment}{character string with any text comments}
+
+\item{hn24}{height of new snow within 24 h}
+
+\item{hn72}{height of new snow within 72 h}
+
+\item{ski_pen}{skier penetration depth (cm)}
+
 \item{layers}{\link{snowprofileLayers} object}
+
+\item{tests}{\link{snowprofileTests} object}
+
+\item{instabilitySigns}{\link{snowprofileInstabilitySigns} object}
 }
 \value{
 snowprofile object

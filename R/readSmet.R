@@ -11,7 +11,7 @@
 #'
 #' @author shorton
 #'
-#' @seealso [snowprofileSno], [snowprofilePrf], [snowprofilePro]
+#' @seealso [writeSmet], [snowprofileSno], [snowprofilePrf], [snowprofilePro]
 #'
 #' @examples
 #'

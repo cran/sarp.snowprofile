@@ -41,6 +41,11 @@ Profile <- SPpairs$C_day1
 str(Profile)
 ```
 
+Check out an empty snowprofile object to understand which information can potentially go where:
+```{r}
+snowprofile(dropNAs = FALSE)
+```
+
 ## 2. Profile creation
 
 The package includes functions to create a `snowprofile` object by importing common file formats as well as provides constructor functions to manually create a `snowprofile`.

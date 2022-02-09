@@ -15,11 +15,12 @@ A list of 12 snowprofile objects.
 }
 \examples{
 
-plot(SPgroup, SortMethod = 'unsorted', labelOriginalIndices = TRUE)
+plot(SPgroup, SortMethod = 'unsorted', xticklabels = "originalIndices")
+plot(SPgroup, SortMethod = 'hs', xticklabels = "originalIndices")
 
 }
 \seealso{
-\link{SPpairs}, \link{SPtimeline}
+\link{SPpairs}, \link{SPtimeline}, \link{plot.snowprofileSet}
 }
 \keyword{object}
 \keyword{snowprofile}

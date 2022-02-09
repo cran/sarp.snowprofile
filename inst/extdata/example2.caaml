@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SnowProfile xmlns:caaml="http://caaml.org/Schemas/SnowProfileIACS/v6.0.3" xmlns:gml="http://www.opengis.net/gml" xmlns:snowpilot="http://www.snowpilot.org/Schemas/caaml" gml:id="SnowPilot-26496">
+  <metaData>
+    <comment>Bottom 40 had lots of alder and didn't show Nov 5 </comment>
+  </metaData>
+  <timeRef>
+    <recordTime>
+      <TimeInstant>
+        <timePosition>2020-12-11T14:00:00-07:00</timePosition>
+      </TimeInstant>
+    </recordTime>
+    <dateTimeReport>2020-12-11T21:35:27-07:00</dateTimeReport>
+    <dateTimeLastEdit>2020-12-11T21:40:55-07:00</dateTimeLastEdit>
+  </timeRef>
+  <srcRef>
+    <Operation gml:id="SnowPilot-Group-877">
+      <name>Avalanche Canada</name>
+      <contactPerson gml:id="SnowPilot-User-6354">
+        <name>An observer</name>
+      </contactPerson>
+    </Operation>
+  </srcRef>
+  <locRef gml:id="location-nid-26496">
+    <name>SFU FAR Avcan weekly</name>
+    <obsPointSubType>SnowPilot Snowpit site</obsPointSubType>
+    <validElevation>
+      <ElevationPosition uom="m">
+        <position>1706</position>
+      </ElevationPosition>
+    </validElevation>
+    <validSlopeAngle>
+      <SlopeAnglePosition uom="deg">
+        <position>0</position>
+      </SlopeAnglePosition>
+    </validSlopeAngle>
+    <pointLocation>
+      <gml:Point gml:id="Location-26496" srsDimension="2" srsName="urn:ogc:def:crs:OGC:1.3:CRS84">
+        <gml:pos>49.4359940 -115.1023440</gml:pos>
+      </gml:Point>
+    </pointLocation>
+  </locRef>
+  <snowProfileResultsOf>
+    <SnowProfileMeasurements dir="top down">
+      <metaData/>
+      <profileDepth uom="cm">110</profileDepth>
+      <weatherCond>
+        <precipTI>Nil</precipTI>
+      </weatherCond>
+      <snowPackCond>
+        <hS>
+          <Components>
+            <height uom="cm">110</height>
+          </Components>
+        </hS>
+      </snowPackCond>
+      <surfCond>
+        <metaData>
+          <customData/>
+        </metaData>
+      </surfCond>
+      <stratProfile>
+        <stratMetaData>
+          <customData>
+            <snowpilot:layerOfConcern>1</snowpilot:layerOfConcern>
+          </customData>
+        </stratMetaData>
+        <Layer>
+          <depthTop uom="cm">0</depthTop>
+          <thickness uom="cm">5</thickness>
+          <grainFormPrimary>PP</grainFormPrimary>
+          <hardness uom="">F</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">5</depthTop>
+          <thickness uom="cm">23</thickness>
+          <grainFormPrimary>DF</grainFormPrimary>
+          <hardness uom="">4F</hardness>
+        </Layer>
+        <Layer>
+          <metaData>
+           <comment>2020-12-08</comment>
+          </metaData>
+          <depthTop uom="cm">28</depthTop>
+          <thickness uom="cm">3</thickness>
+          <grainFormPrimary>MFcr</grainFormPrimary>
+          <hardness uom="">K</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">31</depthTop>
+          <thickness uom="cm">8</thickness>
+          <grainFormPrimary>RG</grainFormPrimary>
+          <grainSize uom="mm">
+            <Components>
+              <avg>0.5</avg>
+            </Components>
+          </grainSize>
+          <hardness uom="">1F</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">39</depthTop>
+          <thickness uom="cm">1</thickness>
+          <grainFormPrimary>MFcr</grainFormPrimary>
+          <hardness uom="">K</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">40</depthTop>
+          <thickness uom="cm">8</thickness>
+          <grainFormPrimary>FCxr</grainFormPrimary>
+          <grainSize uom="mm">
+            <Components>
+              <avg>0.3</avg>
+            </Components>
+          </grainSize>
+          <hardness uom="">1F+</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">48</depthTop>
+          <thickness uom="cm">1</thickness>
+          <grainFormPrimary>MFcr</grainFormPrimary>
+          <hardness uom="">P</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">49</depthTop>
+          <thickness uom="cm">3</thickness>
+          <grainFormPrimary>FCxr</grainFormPrimary>
+          <grainSize uom="mm">
+            <Components>
+              <avg>0.5</avg>
+            </Components>
+          </grainSize>
+          <hardness uom="">1F</hardness>
+        </Layer>
+        <Layer>
+          <depthTop uom="cm">52</depthTop>
+          <thickness uom="cm">18</thickness>
+          <grainFormPrimary>FCxr</grainFormPrimary>
+          <grainSize uom="mm">
+            <Components>
+              <avg>0.5</avg>
+            </Components>
+          </grainSize>
+          <hardness uom="">P</hardness>
+        </Layer>
+        <Layer>
+          <metaData>
+           <comment>Clustering</comment>
+          </metaData>
+          <depthTop uom="cm">70</depthTop>
+          <thickness uom="cm">40</thickness>
+          <grainFormPrimary>FCxr</grainFormPrimary>
+          <grainSize uom="mm">
+            <Components>
+              <avg>1</avg>
+            </Components>
+          </grainSize>
+          <hardness uom="">P</hardness>
+          <wetness uom="">M</wetness>
+        </Layer>
+      </stratProfile>
+      <tempProfile>
+        <tempMetaData/>
+        <Obs>
+          <depth uom="cm">10</depth>
+          <snowTemp uom="degC">-6.4</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">20</depth>
+          <snowTemp uom="degC">-5.3</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">30</depth>
+          <snowTemp uom="degC">-3.9</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">40</depth>
+          <snowTemp uom="degC">-3.0</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">50</depth>
+          <snowTemp uom="degC">-2.4</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">60</depth>
+          <snowTemp uom="degC">-1.5</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">70</depth>
+          <snowTemp uom="degC">-1.5</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">80</depth>
+          <snowTemp uom="degC">-1.0</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">90</depth>
+          <snowTemp uom="degC">-1.0</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">100</depth>
+          <snowTemp uom="degC">-0.7</snowTemp>
+        </Obs>
+        <Obs>
+          <depth uom="cm">110</depth>
+          <snowTemp uom="degC">-0.6</snowTemp>
+        </Obs>
+      </tempProfile>
+      <stbTests>
+        <ComprTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">22</depthTop>
+            </Layer>
+            <Results>
+              <fractureCharacter>BRK</fractureCharacter>
+              <testScore>18</testScore>
+            </Results>
+          </failedOn>
+        </ComprTest>
+        <ComprTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">22</depthTop>
+            </Layer>
+            <Results>
+              <fractureCharacter>BRK</fractureCharacter>
+              <testScore>12</testScore>
+            </Results>
+          </failedOn>
+        </ComprTest>
+        <ComprTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">32</depthTop>
+            </Layer>
+            <Results>
+              <fractureCharacter>SC</fractureCharacter>
+              <testScore>22</testScore>
+            </Results>
+          </failedOn>
+        </ComprTest>
+        <ComprTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">32</depthTop>
+            </Layer>
+            <Results>
+              <fractureCharacter>SC</fractureCharacter>
+              <testScore>21</testScore>
+            </Results>
+          </failedOn>
+        </ComprTest>
+        <ComprTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">40</depthTop>
+            </Layer>
+            <Results>
+              <fractureCharacter>RP</fractureCharacter>
+              <testScore>23</testScore>
+            </Results>
+          </failedOn>
+        </ComprTest>
+        <ExtColumnTest>
+          <failedOn>
+            <Layer>
+              <depthTop uom="cm">32</depthTop>
+            </Layer>
+            <Results>
+              <testScore>ECTN20</testScore>
+            </Results>
+          </failedOn>
+        </ExtColumnTest>
+      </stbTests>
+    </SnowProfileMeasurements>
+  </snowProfileResultsOf>
+</SnowProfile>

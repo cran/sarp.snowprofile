@@ -19,37 +19,20 @@
 is.snowprofileLayers <- function(x) inherits(x, "snowprofileLayers")
 
 
-#' Low-level constructor for a snowprofileLayers object
-#'
-#' Low-cost, efficient constructor function to be used by users who know what they're doing. \cr \cr
-#' \strong{Important:} Make sure the last row of the data.frame corresponds to the snow surface. No checks incorporated for this low-level constructor!
-#'
-#' @param ... see [snowprofileLayers]
-#'
-#' @return snowprofileLayers object as data.frame with strings as factors
-#'
-#' @export
-#'
-new_snowprofileLayers <- function(...) {
-
-  entries <- list(...)
-  layers <- as.data.frame(entries, stringsAsFactors = TRUE)
-  class(layers) <- append("snowprofileLayers", class(layers))
-
-  return(layers)
-}
-
-
-#' High-level constructor for a snowprofileLayers object
+#' Constructor for a snowprofileLayers object
 #'
 #' Helper function to conveniently create a snowprofileLayers object, i.e. data.frame with mandatory column fields height (or depth) that provides vertical position of layers.
-#' Layers need to be ordered in an ascending manner, i.e. last row corresponds to snow surface. If only depth is given, the layer thickness of the lowermost
-#' layer will be set to a default value (100 cm) to be able to convert to height (i.e. important for subsequent package routines). If the columns are not of equal
-#' lengths, their values will be recycled (default data.frame mechanism), but a warning will be issued. Certain columns will be auto-filled
-#' ([format_snowprofileLayers]). Instead of individual layer characteristics, a data.frame can be provided, which will be converted into a snowprofileLayers class.
-#' Calls low-level constructor [new_snowprofileLayers] and asserts correctness through a call to [validate_snowprofileLayers].
+#' Layers need to be ordered in a sequential manner, and the routine will rearrange the layers so that the last row of the resulting dataframe corresponds to the snow surface.
+#' If the vertical location of the layers is given by depth, make sure to provide `hs` if it's known. Otherwise, provide the field `maxObservedDepth` or layer thicknesses.
+#' Providing only depth will issue a warning and set the corresponding lowest layer thickness to NA.
+#' The resulting dataframe will contain all three fields `height`, `depth`, and `thickness`, which will be auto-filled if not provided (see [format_snowprofileLayers]).
+#' If the columns that describe layer properties are not of equal
+#' lengths, their values will be recycled (default data.frame mechanism). Instead of individual layer characteristics, a data.frame can be provided, which will be converted into a snowprofileLayers class.
+#' The constructor asserts correctness of the layers object by a call to [validate_snowprofileLayers].
 #'
-#' @param height height vector (cm)
+#' @param height height vector (cm) referring to the top layer interface. Instead of `height`, `depth` can also be given and should be accompanied by
+#' an array specifying the `thickness` of the layers, or alternatively, the total snow depth `hs` and/or the maximum observed depth `maxObservedDepth`
+#' should be provided. Note, that also the `depth` refers to the top layer interface. **See examples!**
 #' @param temperature snow temperature (deg C)
 #' @param density layer density (kg/m3)
 #' @param lwc liquid water content (%)
@@ -61,11 +44,22 @@ new_snowprofileLayers <- function(...) {
 #' @param hardness numeric hand hardness (use [char2numHHI] to convert from character hardness)
 #' @param ddate deposition date of layer (POSIXct format)
 #' @param bdate burial date of layer (Date format)
+#' @param datetag of layer (i.e., usually corresponds to `ddate` for 'MFcr', and to `bdate` for all other grain types.)
 #' @param ssi snow stability index (numeric)
+#' @param sphericity between 0 and 1
+#' @param v_strain_rate viscous deformation rate (s^-1)
+#' @param crit_cut_length critical crack length (m)
+#' @param tsa threshold sum approach for structural instability (also called lemons); valid for the layer, i.e., the weakest interface adjacent to the layer. see [computeTSA].
+#' @param tsa_interface same as tsa, but valid for top interface of corresponding layer
+#' @param rta relative threshold sum approach (following Monti et al 2013, ISSW paper); valid for the layer, i.e., the weakest interface adjacent to the layer. see [computeRTA].
+#' @param rta_interface same as rta, but valid for top interface of corresponding layer
+#' @param layerOfInterest a boolean column to label specific layers of interest, e.g. weak layers. see [labelPWL].
+#' @param comment character string
 #' @param ... columns to include in the layers object. Note, that they need to correspond to the according height/depth array.
 #' e.g. hardness (can use character hardness or numeric hardness via [char2numHHI]), ddate (class POSIX), bdate (class Date) gtype (character or factor), density, temperature, gsize, lwc, gsize_max, gtype_sec, ssi, depth, thickness
-#' @param hs total snow height (cm), if not deductible from height or depth & thickness vector
-#' @param formatTarget string indicating which layer characteristics should be auto-filled, e.g. 'all' (default), 'height', 'depth', 'thickness', 'none'
+#' @param hs total snow height (cm), if not deductible from `height` vector. Particularly important when only a depth grid is provided!
+#' @param maxObservedDepth the observed depth of the profile from the snow surface downwards. Will only be used, if
+#' no `height`, `thickness`, or `hs` is given.
 #' @param layerFrame a data.frame that's converted to a snowprofileLayers class if no other layer characteristics are provided
 #' @param validate Validate `obj` with [validate_snowprofileLayers]?
 #' @param dropNAs Do you want to drop all columns consisting of NAs only?
@@ -79,22 +73,76 @@ new_snowprofileLayers <- function(...) {
 #' @examples
 #'
 #' ## Empty layers object:
-#' snowprofileLayers(dropNAs = FALSE)
+#' snowprofileLayers()
 #'
 #'
-#' ## convert and recycle character hardness (i.e., warning issued):
+#' ## simple layers example that recycles the hardness 1F+: with warning issued!
 #' snowprofileLayers(height = c(10, 25, 50),
 #'                   hardness = char2numHHI('1F+'),
 #'                   gtype = c('FC', NA, 'PP'))
 #'
 #'
-#' ## create snowprofileLayers object from pre-existant data.frame:
+#' ## create snowprofileLayers object from data.frame
+#' ## and feed it into a snowprofile object:
 #' df <- data.frame(height = c(10, 25, 50),
 #'                   hardness = c(2, 3, 1),
 #'                   gtype = c('FC', NA, 'PP'),
 #'                   stringsAsFactors = TRUE)
 #'
-#' snowprofileLayers(layerFrame = df)
+#' spL <- snowprofileLayers(layerFrame = df)
+#' (sp <- snowprofile(layers = spL))
+#'
+#'
+#' ##### Create top-down recorded snowprofileLayers ####
+#' ## check out how the fields 'hs' and 'maxObservedDepth' are auto-filled in the
+#' ## resulting snowprofile object!
+#' ## 1.) Specify depth and hs:
+#' ## In that case the routine will assume that the deepest layer extends down to the ground
+#' (sp1 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+#'                                                hardness = c(2, 3, 1),
+#'                                                gtype = c('FC', NA, 'PP'),
+#'                                                hs = 50)))
+#' ## note that sp and sp1 are the same profiles:
+#' all(sapply(names(sp$layers), function(cols) {sp$layers[cols] == sp1$layers[cols]}), na.rm = TRUE)
+#'
+#' ## 2.) Specify depth, hs and thickness or maxObservedDepth:
+#' ## This will include a basal layer of NAs to fill the unobserved space down to the ground.
+#' (sp2 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+#'                                                hardness = c(2, 3, 1),
+#'                                                gtype = c('FC', NA, 'PP'),
+#'                                                hs = 70,
+#'                                                maxObservedDepth = 50)))
+#'
+#' ## 3.) Specify depth and maxObservedDepth:
+#' ## This will include a basal layer of NAs which is 1 cm thick to flag the unknown basal layers.
+#' (sp3 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+#'                          hardness = c(2, 3, 1),
+#'                          gtype = c('FC', NA, 'PP'),
+#'                          gsize = c(2, NA, NA),
+#'                          maxObservedDepth = 50)))
+#'
+#' ## 4.) Specify depth and thickness:
+#' ## This is equivalent to the example spL3 above!
+#' ## This will include a basal layer of NAs which is 1 cm thick to flag the unknown basal layers.
+#' (sp4 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+#'                          thickness = c(10, 15, 25),
+#'                          hardness = c(2, 3, 1),
+#'                          gtype = c('FC', NA, 'PP'))))
+#'
+#' ## 5.) Specify only depth: issues warning!
+#' (sp5 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+#'                          hardness = c(2, 3, 1),
+#'                          gtype = c('FC', NA, 'PP'))))
+#'
+#' ## plot all 5 top.down-recorded profiles:
+#' set <- snowprofileSet(list(sp1, sp2, sp3, sp4, sp5))
+#' plot(set, SortMethod = "unsorted", xticklabels = "originalIndices",
+#'      hardnessResidual = 0.1, hardnessScale = 1.5, TopDown = TRUE,
+#'      main = "TopDown Plot")
+#'
+#' plot(set, SortMethod = "unsorted", xticklabels = "originalIndices",
+#'      hardnessResidual = 0.1, hardnessScale = 1.5, TopDown = FALSE,
+#'      main = "BottomUp Plot")
 #'
 #' @export
 #'
@@ -110,40 +158,77 @@ snowprofileLayers <- function(height = as.double(NA),
                               hardness = as.double(NA),
                               ddate = as.POSIXct(NA),
                               bdate = as.Date(NA),
+                              datetag = as.POSIXct(NA),
                               ssi = as.double(NA),
+                              sphericity = as.double(NA),
+                              v_strain_rate = as.double(NA),
+                              crit_cut_length = as.double(NA),
+                              tsa = as.double(NA),
+                              tsa_interface = as.double(NA),
+                              rta = as.double(NA),
+                              rta_interface = as.double(NA),
+                              layerOfInterest = as.logical(NA),
+                              comment = as.character(NA),
                               ...,
                               hs = as.double(NA),
-                              formatTarget = "all",
+                              maxObservedDepth = as.double(NA),
                               layerFrame = NA,
                               validate = TRUE,
                               dropNAs = TRUE) {
 
-  ## warn if recycling values
-  entries <- list(height = height, ...)
-  if (any(diff(sapply(entries, length)) != 0)) warning("not all inputs have the same length, recycling..")
+  ## combine layer properties into one list
+  entries <- c(list(...), list(height = height,
+                               temperature = temperature,
+                               density = density,
+                               lwc = lwc,
+                               gsize = gsize,
+                               gsize_max = gsize_max,
+                               gsize_avg = gsize_avg,
+                               gtype = gtype,
+                               gtype_sec = gtype_sec,
+                               hardness = hardness,
+                               ddate = ddate,
+                               bdate = bdate,
+                               datetag = datetag,
+                               ssi = ssi,
+                               sphericity = sphericity,
+                               v_strain_rate = v_strain_rate,
+                               crit_cut_length = crit_cut_length,
+                               tsa = tsa,
+                               tsa_interface = tsa_interface,
+                               rta = rta,
+                               rta_interface = rta_interface,
+                               layerOfInterest = layerOfInterest,
+                               comment = comment))
+
 
   ## create snowprofile object either from specific input variables or from layerFrame:
   if (all(is.na(entries)) && is.data.frame(layerFrame)) {
-    object <- new_snowprofileLayers(layerFrame)
-  } else {
-    object <- new_snowprofileLayers(height = height,
-                                    temperature = temperature,
-                                    density = density,
-                                    lwc = lwc,
-                                    gsize = gsize,
-                                    gsize_max = gsize_max,
-                                    gsize_avg = gsize_avg,
-                                    gtype = gtype,
-                                    gtype_sec = gtype_sec,
-                                    hardness = hardness,
-                                    ddate = ddate,
-                                    bdate = bdate,
-                                    ssi = ssi,
-                                    ...)
-  }
+    object <- as.data.frame(layerFrame, stringsAsFactors = TRUE)
 
-  ## run checks and format layers:
-  object <- format_snowprofileLayers(object, target = formatTarget, hs = hs, validate = validate, dropNAs = dropNAs)
+  } else {
+    ## warn if recycling values due to different lengths of input vectors
+    if (any(diff(sapply(entries[!is.na(entries)], length)) != 0)) warning("not all inputs have the same length, recycling..")
+    ## create data.frame
+    object <- data.frame(entries,
+                         stringsAsFactors = TRUE)
+  }
+  ## assign class
+  class(object) <- append("snowprofileLayers", class(object))
+
+  ## run checks and format layers if object is not empty (i.e., one row of all NAs)
+  if (!(nrow(object) == 1 & all(is.na(object[1, ])))) {
+    object <- format_snowprofileLayers(object, target = "all", hs = hs, maxObservedDepth = maxObservedDepth,
+                                       validate = validate, dropNAs = dropNAs)
+  } else {
+    ## append columns depth and thickness at positions 1 and 3
+    object$depth <- as.double(NA)
+    object$thickness <- as.double(NA)
+    idcols <- c("depth", "height", "thickness")
+    cols <- colnames(object)
+    cols <- c(idcols, cols[-which(cols %in% idcols)])
+    object <- object[, cols]
+  }
 
   return(object)
 }
@@ -156,6 +241,8 @@ snowprofileLayers <- function(height = as.double(NA),
 #' @param obj snowprofileLayers object
 #' @param target string, indicating which fields are auto-filled ('all', 'height', 'depth', 'thickness', 'none')
 #' @param hs total snow height (cm) if not deductible from given fields
+#' @param maxObservedDepth the observed depth of the profile from the snow surface downwards.
+#' Will only be used, if no `height` or `thickness` exist in `obj`, or if `hs` is not given.
 #' @param validate Validate `obj` with [validate_snowprofileLayers]?
 #' @param dropNAs Do you want to drop all columns consisting of NAs only?
 #'
@@ -163,11 +250,9 @@ snowprofileLayers <- function(height = as.double(NA),
 #'
 #' @export
 #'
-format_snowprofileLayers <- function(obj, target = "all", hs = NA, validate = TRUE, dropNAs = TRUE) {
+format_snowprofileLayers <- function(obj, target = "all", hs = NA, maxObservedDepth = NA, validate = TRUE, dropNAs = TRUE) {
 
-  ## initial assertions: validate input
-  if (validate) validate_snowprofileLayers(obj)
-
+  ## ---Initial manipulations, etc----
   ## drop all columns that contain only NA values:
   if (dropNAs) object <- obj[, colSums(is.na(obj)) < nrow(obj)]
   else object <- obj
@@ -175,40 +260,117 @@ format_snowprofileLayers <- function(obj, target = "all", hs = NA, validate = TR
   hsmin <- ifelse("height" %in% cols, tail(object$height, 1), object$depth[1])
   if (all(!is.na(c(hs, hsmin)))) try(if (hs < hsmin) stop(paste("'hs' must be >=", hsmin, "cm")))
 
+  ## sort snow surface to last row:
+  if ("height" %in% cols) k <- order(object$height)
+  else if ("depth" %in% cols) k <- order(object$depth, decreasing = TRUE)
+  object <- object[k, ]
+
   ## decide which columns to calculate:
   if (target == "all") target <- c("height", "depth", "thickness")
   do <- target[!target %in% cols]
-
-  ## do conversion:
-  if (any(do %in% "height")) {
-    ## calculate hs:
-    if (is.na(hs)) {
-      if (c("thickness") %in% cols) {
-        hs <- object$depth[1] + object$thickness[1]
-      } else {
-        warning("total snow height 'hs' is unknown, setting lowest layer thickness to 100 cm")
-        hs <- object$depth[1] + 100
-      }
-    }
-    object$height <- hs - object$depth
+  if (is.null(nrow(object[, target[target %in% cols]]))) target_containNA <- NA
+  else target_containNA <- names(which(sapply(object[, target[target %in% cols]], function(x) any(is.na(x)))))
+  if (("height" %in% target_containNA) & ("depth" %in% target_containNA)) {
+    stop("NAs in both height and depth grid! --> Ambiguous!")
+  } else if ("height" %in% target_containNA) {
+    do <- c(do, "height")
+  } else if ("depth" %in% target_containNA) {
+    do <- c(do, "depth")
   }
 
-  if (any(do %in% "depth")) {
-    hs <- max(object$height)
-    object$depth <- hs - object$height
+  ## initialize for later use:
+  setBasalThicknessNA <- FALSE
+  offset <- as.double(NA)
+
+  ## ---Conversion of grids----
+  if (any(do %in% "height")) {
+    ## calculate offset for conversion:
+    if (!is.na(maxObservedDepth)) {
+      ## check whether reported maxObservedDepth is in line with reported thicknesses:
+      if (c("thickness") %in% cols) {
+        thickness_derived_maxObservedDepth <- object$depth[1] + object$thickness[1]
+        maxObservedDepth <- max(c(maxObservedDepth, thickness_derived_maxObservedDepth), na.rm = TRUE)
+      }
+      offset <- maxObservedDepth
+    }
+    if (!is.na(hs)) offset <- hs  # this deliberately overrides previous offset in case of ambiguity
+    ## maxObservedDepth and hs are both unknown: --> try getting maxObservedDepth from thickness:
+    if (is.na(offset)) {
+      if (c("thickness") %in% cols) {
+        maxObservedDepth <- object$depth[1] + object$thickness[1]
+        offset <- maxObservedDepth
+      }
+    }
+    ## layer thickness is also unknown:
+    if (is.na(offset)) {
+      warning("Total snow height 'hs' is unknown, 'maxObservedDepth' is unknown, and layer 'thickness' of deepest layer is unknown!\n--> Setting lowest layer thickness to NA and maxObservedDepth to 10 cm below the lowest layer.")
+      setBasalThicknessNA <- TRUE
+      do <- c(do, "thickness")  # make sure thickness is computed below!
+      offset <- object$depth[1] + 11
+    }
+
+    ## finally compute height vector:
+    object$height <- offset - object$depth
+  }
+
+
+  if (any(do %in% "depth")) {  # i.e., height vector is known
+    ## retrieve maximum snow height
+    offset <- suppressWarnings( max(c(hs, maxObservedDepth, max(object$height)), na.rm = TRUE) )  # hack for bug in `max`!
+    object$depth <- offset - object$height
   }
 
   if (any(do %in% "thickness")) {
     if (exists("height", where = object)) {
-      object$thickness <- diff(c(0, object$height))
+      offset4thickness <- suppressWarnings( max(c(0, hs - maxObservedDepth), na.rm = TRUE) )
+      object$thickness <- diff(c(offset4thickness, object$height))
     } else {
-      if (is.na(hs)) {
-      warning("total snow height 'hs' is unknown, setting lowest layer thickness to 100 cm")
-      hs <- object$depth[1] + 100
+      if (is.na(offset)) stop("Something went wrong! You likely need to provide more information, such as 'hs', 'maxObservedDepth', or 'thickness'!")
+      offset4thickness <- ifelse(is.na(maxObservedDepth), offset, maxObservedDepth)
+      object$thickness <- abs(diff(c(offset4thickness, object$depth)))
+    }
+    if (setBasalThicknessNA) object$thickness[1] <- as.double(NA)
+  }
+
+  ## ---Insert basal layer if necessary----
+  ## The code below requires height and thickness,
+  ## which should be available with new default formatTarget == "all" settings!
+  if (!(exists("height", where = object) & exists("thickness", where = object))) {
+    stop("Something went wrong and your profiles has no 'height' and/or 'thickness' column. Use formatTarget = 'all'!" )
+  }
+
+  ## insert NA basal layer if (height - thickness) of the lowest layer is above the ground, AND...
+  basal_offset <- (object$height[1] - object$thickness[1])  # (height - thickness) of the lowest layer
+
+  ## ... AND when depth is given but hs is unknown:
+  if (!"depth" %in% do & is.na(hs)) {
+    basal_offset <- 1
+    setBasalThicknessNA <- TRUE
+  }
+
+  if (isTRUE(basal_offset >= 1)) {  # previous queries demand for basal offset layer
+    object <- insertUnobservedBasalLayer(object, basal_offset, setBasalThicknessNA)
+  }
+
+  ## ---Cosmetcis: colorder----
+  idcols <- c("depth", "height", "thickness")
+  cols <- c(idcols, cols[-which(cols %in% idcols)])
+  object <- object[, cols]
+
+  ## ---Type conversions----
+  emptySPL <- snowprofileLayers(validate = FALSE, dropNAs = FALSE)
+  dtypes <- sapply(emptySPL, function(x) class(x)[1])
+  for (col in cols) {  # convert standard object columns to correct classes
+    if (col %in% names(dtypes)){
+      if (unname(dtypes[col]) == "POSIXct" & !inherits(object[, col], "POSIXct")) {  # hack to prevent errors while converting empty strings to POSIXct
+        object[which(object[, col] == ""), col] <- NA
       }
-      object$thickness <- diff(c(hs, object$depth))
+      object[, col] <- do.call(paste0("as.", unname(dtypes[col])), list(x = object[, col]))  # do type conversion
     }
   }
+
+  ## ---Final assertions: validate input----
+  if (validate) validate_snowprofileLayers(object)
 
   return(object)
 }
@@ -229,12 +391,16 @@ format_snowprofileLayers <- function(obj, target = "all", hs = NA, validate = TR
 validate_snowprofileLayers <- function(object, silent = FALSE) {
 
   cols <- colnames(object)
-  knownNames <- names(snowprofileLayers(validate = FALSE, dropNAs = FALSE))
+  knownNames <- c(names(snowprofileLayers(validate = FALSE, dropNAs = FALSE)),
+                  c("queryLayerIndex", "refLayerIndex"))
   err <- NULL
 
   ## mandatory fields:
-  try(if (!(any(c("height", "depth") %in% cols)))
-    err <- paste(err, "Missing mandatory layer characteristics 'height' or 'depth'", sep = "\n "))
+  mandatory_fields <- c("height", "depth")
+  try(if (!(all(mandatory_fields %in% cols))) {
+    mmlc <- which(!mandatory_fields %in% cols)
+    err <- paste(err, paste("Missing mandatory layer characteristics", mandatory_fields[mmlc], "") , sep = "\n ")
+  })
 
   ## unknown fields:
   field_known <- cols %in% knownNames
@@ -251,8 +417,14 @@ validate_snowprofileLayers <- function(object, silent = FALSE) {
 
   factor_vars <- c('gtype', 'gtype_sec')
   for (v in factor_vars){
-    if (v %in% cols)
+    if (v %in% cols) {
       try(if (!is.factor(object[[v]])) err <- paste(err, paste(v, "needs to be a factor"), sep = "\n "))
+      ## also check for unknown grain types:
+      if (v %in% c('gtype', 'gtype_sec')) {
+        try(if (((!all(object[[v]] %in% c(grainDict$gtype, NA_character_)) && (!all(is.na(object[[v]]))))))
+          err <- paste(err, paste0("unknown ", v, " (s), use simplifyGtypes"), sep = "\n "))
+      }
+    }
   }
 
   date_vars <- c('bdate')
@@ -277,6 +449,8 @@ validate_snowprofileLayers <- function(object, silent = FALSE) {
     if ("height" %in% cols)
       try(if (tail(object$height, 1) != max(object$height))
         err <- paste(err, "layer order wrong! last data.frame entry needs to be at snow surface", sep = "\n "))
+      try(if (any(diff(object$height) <= 0))
+        err <- paste(err, "layers are not sorted in monotonicly increasing height!"))
 
     if ("depth" %in% cols)
       try(if (tail(object$depth, 1) != min(object$depth))

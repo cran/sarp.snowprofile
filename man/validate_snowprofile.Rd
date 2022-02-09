@@ -51,6 +51,7 @@ lapply(SPmalformatted, validate_snowprofile)
 ## so that you get a comprehensive list of errors of all profiles:
 if (!this_throws_error) {
 errorlist <- lapply(SPmalformatted, validate_snowprofile, silent = TRUE)
+errorlist[sapply(errorlist, function(item) !is.null(item))]  # print profiles that caused errors
 }
 
 }

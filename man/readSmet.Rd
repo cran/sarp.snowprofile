@@ -24,7 +24,7 @@ str(Wx)
 
 }
 \seealso{
-\link{snowprofileSno}, \link{snowprofilePrf}, \link{snowprofilePro}
+\link{writeSmet}, \link{snowprofileSno}, \link{snowprofilePrf}, \link{snowprofilePro}
 }
 \author{
 shorton

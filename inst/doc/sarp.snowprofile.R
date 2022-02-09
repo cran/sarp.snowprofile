@@ -7,6 +7,9 @@ Profile <- SPpairs$C_day1
 str(Profile)
 
 ## -----------------------------------------------------------------------------
+snowprofile(dropNAs = FALSE)
+
+## -----------------------------------------------------------------------------
 ## Import a CAAML file
 # Filename <- "path/to/file.caaml"
 # Profile <- snowprofileCaaml(Filename)

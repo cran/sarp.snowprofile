@@ -15,7 +15,7 @@
 data.frame
 }
 \description{
-A wrapper to apply \link{rbind.snowprofile} to each profile in a snowprofilSet then concatenate
+A wrapper to apply \link{rbind.snowprofile} to each profile in a \link{snowprofileSet} then concatenate
 }
 \details{
 Returns a large data.frame with a row for each layer and additional columns with metadata (calculated with \link{summary.snowprofile})

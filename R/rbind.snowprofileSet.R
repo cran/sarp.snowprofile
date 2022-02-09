@@ -1,6 +1,6 @@
 #' Concatenate snowprofileSet into a large data.frame with a row for each layer
 #'
-#' A wrapper to apply [rbind.snowprofile] to each profile in a snowprofilSet then concatenate
+#' A wrapper to apply [rbind.snowprofile] to each profile in a [snowprofileSet] then concatenate
 #'
 #' @param ... Object of class [snowprofileSet]
 #' @param deparse.level Argument for generic rbind method

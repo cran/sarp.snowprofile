@@ -4,10 +4,12 @@
 \alias{summary.snowprofile}
 \title{Summary of a single snowprofile}
 \usage{
-\method{summary}{snowprofile}(object, ...)
+\method{summary}{snowprofile}(object, fast = FALSE, ...)
 }
 \arguments{
 \item{object}{snowprofile object}
+
+\item{fast}{boolean switch for twice as fast computation. downside: keep only length-1 meta data, i.e., discard latlon, or nlayers..}
 
 \item{...}{additional arguments for generic method}
 }

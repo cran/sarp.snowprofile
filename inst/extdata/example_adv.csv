@@ -1,0 +1,14 @@
+datetime,uid,zone,station,station_id,aspect,elev,angle,hs,maxObservedDepth,depth,gtype,hardness,datetag,gsize,gtype_sec,test,result,score,fract_char,test_depth,instabilitySign_type,instabilitySign_present,instabilitySign_comment,layer_comment,test_comment,comment
+2020-03-02 12:30,C1_20_999,C1,G-Spot,mwhs,SE,5200,30,275,115,0,PP,F,,,,ST,E,,RP,14,Na,FALSE,,,,Several fields in this csv example have been made up!
+,,,,,,,,,,14,PP,F-,,,,ECT,P,8,PC,14,whumpf,TRUE,Hell of a whumpf!,,Made up ECT!,
+,,,,,,,,,,15,DF,F-4F,,,,ST,E-M,,SP,51,crack,TRUE,,,,
+,,,,,,,,,,30,DF,4F,,,,CT,M,19,SP,51,Sa,FALSE,,,,
+,,,,,,,,,,50,SH,F+,,8,,ST,H,,BRK,96,,,,,,
+,,,,,,,,,,51,DF,4F-1F,,,,CT,H,28,SP,96,,,,,,
+,,,,,,,,,,68,SH,4F-,2019-12-31,6,,ST,N,,NA,68,,,,Made up datetag!,,
+,,,,,,,,,,69,RG,1F-P,,,,,,,,,,,,,,
+,,,,,,,,,,89,FC,1F-P,,,,,,,,,,,,,,
+,,,,,,,,,,90,MFcr,K,,,,,,,,,,,,,,
+,,,,,,,,,,94,FC,P-,,,,,,,,,,,,,,
+,,,,,,,,,,96,MFcr,K,,,,,,,,,,,,,,
+,,,,,,,,,,100,RG,1F-P,,,FCxr,,,,,,,,,,,

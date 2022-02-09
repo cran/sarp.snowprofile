@@ -16,7 +16,7 @@
 #' @references
 #'
 #' Horton, S., Nowak, S., and Haegeli, P.: Enhancing the operational value of snowpack models with visualization design principles,
-#' Nat. Hazards Earth Syst. Sci., 20, 1557–1572, \href{https://doi.org/10.5194/nhess-20-1557-2020}{https://doi.org/10.5194/nhess-20-1557-2020}, 2020.
+#' Nat. Hazards Earth Syst. Sci., 20, 1557–1572, \doi{10.5194/nhess-20-1557-2020}, 2020.
 #'
 #' @examples
 #'

@@ -1,13 +1,13 @@
 Package: sarp.snowprofile
-Version: 1.0.0
-Date: 2020-07-20
+Version: 1.2.1
+Date: 2022-02-07
 Title: Snow Profile Analysis for Snowpack and Avalanche Research
 Authors@R: c(
-    person(given = "Pascal", family = "Haegeli", role = c("aut", "cre"), email = "pascal_haegeli@sfu.ca"),
-    person(given = "Simon", family = "Horton", role = "aut", email = "shorton@sfu.ca"),
-    person(given = "Florian", family = "Herla", role = "aut", email = "fherla@sfu.ca"),
+    person("Pascal", "Haegeli", , "pascal_haegeli@sfu.ca", role = c("aut", "cre")),
+    person("Simon", "Horton", , "shorton@sfu.ca", role = "aut"),
+    person("Florian", "Herla", , "fherla@sfu.ca", role = "aut"),
     person("SFU Avalanche Research Program", role = "fnd")
-    )
+  )
 Description: Analysis and plotting tools for snow profile data produced from manual snowpack 
   observations and physical snowpack models. The functions in this package support snowpack 
   and avalanche research by reading various formats of data (including CAAML, SMET,
@@ -20,18 +20,18 @@ URL: http://www.avalancheresearch.ca
 License: CC BY-SA 4.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Language: en-CA
 Imports: data.table, methods, xml2,
 Depends: R (>= 2.10)
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, stringr, sarp.snowprofile.alignment
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-07-20 16:13:30 UTC; shorton
+Packaged: 2022-02-08 12:31:07 UTC; flo
 Author: Pascal Haegeli [aut, cre],
   Simon Horton [aut],
   Florian Herla [aut],
   SFU Avalanche Research Program [fnd]
 Maintainer: Pascal Haegeli <pascal_haegeli@sfu.ca>
 Repository: CRAN
-Date/Publication: 2020-07-25 11:00:02 UTC
+Date/Publication: 2022-02-10 00:20:02 UTC

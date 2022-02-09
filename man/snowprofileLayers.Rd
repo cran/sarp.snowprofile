@@ -2,7 +2,7 @@
 % Please edit documentation in R/snowprofileLayers.R
 \name{snowprofileLayers}
 \alias{snowprofileLayers}
-\title{High-level constructor for a snowprofileLayers object}
+\title{Constructor for a snowprofileLayers object}
 \usage{
 snowprofileLayers(
   height = as.double(NA),
@@ -17,17 +17,29 @@ snowprofileLayers(
   hardness = as.double(NA),
   ddate = as.POSIXct(NA),
   bdate = as.Date(NA),
+  datetag = as.POSIXct(NA),
   ssi = as.double(NA),
+  sphericity = as.double(NA),
+  v_strain_rate = as.double(NA),
+  crit_cut_length = as.double(NA),
+  tsa = as.double(NA),
+  tsa_interface = as.double(NA),
+  rta = as.double(NA),
+  rta_interface = as.double(NA),
+  layerOfInterest = as.logical(NA),
+  comment = as.character(NA),
   ...,
   hs = as.double(NA),
-  formatTarget = "all",
+  maxObservedDepth = as.double(NA),
   layerFrame = NA,
   validate = TRUE,
   dropNAs = TRUE
 )
 }
 \arguments{
-\item{height}{height vector (cm)}
+\item{height}{height vector (cm) referring to the top layer interface. Instead of \code{height}, \code{depth} can also be given and should be accompanied by
+an array specifying the \code{thickness} of the layers, or alternatively, the total snow depth \code{hs} and/or the maximum observed depth \code{maxObservedDepth}
+should be provided. Note, that also the \code{depth} refers to the top layer interface. \strong{See examples!}}
 
 \item{temperature}{snow temperature (deg C)}
 
@@ -51,14 +63,35 @@ snowprofileLayers(
 
 \item{bdate}{burial date of layer (Date format)}
 
+\item{datetag}{of layer (i.e., usually corresponds to \code{ddate} for 'MFcr', and to \code{bdate} for all other grain types.)}
+
 \item{ssi}{snow stability index (numeric)}
+
+\item{sphericity}{between 0 and 1}
+
+\item{v_strain_rate}{viscous deformation rate (s^-1)}
+
+\item{crit_cut_length}{critical crack length (m)}
+
+\item{tsa}{threshold sum approach for structural instability (also called lemons); valid for the layer, i.e., the weakest interface adjacent to the layer. see \link{computeTSA}.}
+
+\item{tsa_interface}{same as tsa, but valid for top interface of corresponding layer}
+
+\item{rta}{relative threshold sum approach (following Monti et al 2013, ISSW paper); valid for the layer, i.e., the weakest interface adjacent to the layer. see \link{computeRTA}.}
+
+\item{rta_interface}{same as rta, but valid for top interface of corresponding layer}
+
+\item{layerOfInterest}{a boolean column to label specific layers of interest, e.g. weak layers. see \link{labelPWL}.}
+
+\item{comment}{character string}
 
 \item{...}{columns to include in the layers object. Note, that they need to correspond to the according height/depth array.
 e.g. hardness (can use character hardness or numeric hardness via \link{char2numHHI}), ddate (class POSIX), bdate (class Date) gtype (character or factor), density, temperature, gsize, lwc, gsize_max, gtype_sec, ssi, depth, thickness}
 
-\item{hs}{total snow height (cm), if not deductible from height or depth & thickness vector}
+\item{hs}{total snow height (cm), if not deductible from \code{height} vector. Particularly important when only a depth grid is provided!}
 
-\item{formatTarget}{string indicating which layer characteristics should be auto-filled, e.g. 'all' (default), 'height', 'depth', 'thickness', 'none'}
+\item{maxObservedDepth}{the observed depth of the profile from the snow surface downwards. Will only be used, if
+no \code{height}, \code{thickness}, or \code{hs} is given.}
 
 \item{layerFrame}{a data.frame that's converted to a snowprofileLayers class if no other layer characteristics are provided}
 
@@ -71,31 +104,87 @@ snowprofileLayers object as data.frame with strings as factors
 }
 \description{
 Helper function to conveniently create a snowprofileLayers object, i.e. data.frame with mandatory column fields height (or depth) that provides vertical position of layers.
-Layers need to be ordered in an ascending manner, i.e. last row corresponds to snow surface. If only depth is given, the layer thickness of the lowermost
-layer will be set to a default value (100 cm) to be able to convert to height (i.e. important for subsequent package routines). If the columns are not of equal
-lengths, their values will be recycled (default data.frame mechanism), but a warning will be issued. Certain columns will be auto-filled
-(\link{format_snowprofileLayers}). Instead of individual layer characteristics, a data.frame can be provided, which will be converted into a snowprofileLayers class.
-Calls low-level constructor \link{new_snowprofileLayers} and asserts correctness through a call to \link{validate_snowprofileLayers}.
+Layers need to be ordered in a sequential manner, and the routine will rearrange the layers so that the last row of the resulting dataframe corresponds to the snow surface.
+If the vertical location of the layers is given by depth, make sure to provide \code{hs} if it's known. Otherwise, provide the field \code{maxObservedDepth} or layer thicknesses.
+Providing only depth will issue a warning and set the corresponding lowest layer thickness to NA.
+The resulting dataframe will contain all three fields \code{height}, \code{depth}, and \code{thickness}, which will be auto-filled if not provided (see \link{format_snowprofileLayers}).
+If the columns that describe layer properties are not of equal
+lengths, their values will be recycled (default data.frame mechanism). Instead of individual layer characteristics, a data.frame can be provided, which will be converted into a snowprofileLayers class.
+The constructor asserts correctness of the layers object by a call to \link{validate_snowprofileLayers}.
 }
 \examples{
 
 ## Empty layers object:
-snowprofileLayers(dropNAs = FALSE)
+snowprofileLayers()
 
 
-## convert and recycle character hardness (i.e., warning issued):
+## simple layers example that recycles the hardness 1F+: with warning issued!
 snowprofileLayers(height = c(10, 25, 50),
                   hardness = char2numHHI('1F+'),
                   gtype = c('FC', NA, 'PP'))
 
 
-## create snowprofileLayers object from pre-existant data.frame:
+## create snowprofileLayers object from data.frame
+## and feed it into a snowprofile object:
 df <- data.frame(height = c(10, 25, 50),
                   hardness = c(2, 3, 1),
                   gtype = c('FC', NA, 'PP'),
                   stringsAsFactors = TRUE)
 
-snowprofileLayers(layerFrame = df)
+spL <- snowprofileLayers(layerFrame = df)
+(sp <- snowprofile(layers = spL))
+
+
+##### Create top-down recorded snowprofileLayers ####
+## check out how the fields 'hs' and 'maxObservedDepth' are auto-filled in the
+## resulting snowprofile object!
+## 1.) Specify depth and hs:
+## In that case the routine will assume that the deepest layer extends down to the ground
+(sp1 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                                               hardness = c(2, 3, 1),
+                                               gtype = c('FC', NA, 'PP'),
+                                               hs = 50)))
+## note that sp and sp1 are the same profiles:
+all(sapply(names(sp$layers), function(cols) {sp$layers[cols] == sp1$layers[cols]}), na.rm = TRUE)
+
+## 2.) Specify depth, hs and thickness or maxObservedDepth:
+## This will include a basal layer of NAs to fill the unobserved space down to the ground.
+(sp2 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                                               hardness = c(2, 3, 1),
+                                               gtype = c('FC', NA, 'PP'),
+                                               hs = 70,
+                                               maxObservedDepth = 50)))
+
+## 3.) Specify depth and maxObservedDepth:
+## This will include a basal layer of NAs which is 1 cm thick to flag the unknown basal layers.
+(sp3 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                         hardness = c(2, 3, 1),
+                         gtype = c('FC', NA, 'PP'),
+                         gsize = c(2, NA, NA),
+                         maxObservedDepth = 50)))
+
+## 4.) Specify depth and thickness:
+## This is equivalent to the example spL3 above!
+## This will include a basal layer of NAs which is 1 cm thick to flag the unknown basal layers.
+(sp4 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                         thickness = c(10, 15, 25),
+                         hardness = c(2, 3, 1),
+                         gtype = c('FC', NA, 'PP'))))
+
+## 5.) Specify only depth: issues warning!
+(sp5 <- snowprofile(layers = snowprofileLayers(depth = c(40, 25, 0),
+                         hardness = c(2, 3, 1),
+                         gtype = c('FC', NA, 'PP'))))
+
+## plot all 5 top.down-recorded profiles:
+set <- snowprofileSet(list(sp1, sp2, sp3, sp4, sp5))
+plot(set, SortMethod = "unsorted", xticklabels = "originalIndices",
+     hardnessResidual = 0.1, hardnessScale = 1.5, TopDown = TRUE,
+     main = "TopDown Plot")
+
+plot(set, SortMethod = "unsorted", xticklabels = "originalIndices",
+     hardnessResidual = 0.1, hardnessScale = 1.5, TopDown = FALSE,
+     main = "BottomUp Plot")
 
 }
 \seealso{

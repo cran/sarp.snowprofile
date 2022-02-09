@@ -7,16 +7,23 @@
 snowprofile(
   station = as.character(NA),
   station_id = as.character(NA),
-  datetime = as.POSIXct(NA, tz = "UTC"),
+  datetime = as.POSIXct(NA),
   latlon = as.double(c(NA, NA)),
   elev = as.double(NA),
   angle = as.double(NA),
   aspect = as.double(NA),
   hs = as.double(NA),
+  maxObservedDepth = as.double(NA),
   type = "manual",
   band = as.character(NA),
   zone = as.character(NA),
-  layers = snowprofileLayers(formatTarget = "FALSE", dropNAs = FALSE),
+  comment = as.character(NA),
+  hn24 = as.double(NA),
+  hn72 = as.double(NA),
+  ski_pen = as.double(NA),
+  layers = snowprofileLayers(dropNAs = FALSE, validate = FALSE),
+  tests = snowprofileTests(dropNAs = FALSE),
+  instabilitySigns = snowprofileInstabilitySigns(dropNAs = FALSE),
   validate = TRUE,
   dropNAs = TRUE
 )
@@ -39,13 +46,28 @@ e.g. \code{print(profile$datetime, tz = 'EST')}.}
 
 \item{hs}{total snow height (cm); if not provided, the field will be derived from the profile layers.}
 
+\item{maxObservedDepth}{equivalent to \code{hs} for full profiles that go down to the ground. for test profiles that only
+observe the upper part of the snowpack this value refers to the maximum depth of the profile observation.}
+
 \item{type}{character string, must be either 'manual', 'modeled', 'vstation', 'aggregate', or 'whiteboard'}
 
 \item{band}{character string describing elevation band as ALP, TL, BTL (alpine, treeline, below treeline)}
 
 \item{zone}{character string describing the zone or region of the profile location (e.g., BURNABY_MTN)}
 
+\item{comment}{character string with any text comments}
+
+\item{hn24}{height of new snow within 24 h}
+
+\item{hn72}{height of new snow within 72 h}
+
+\item{ski_pen}{skier penetration depth (cm)}
+
 \item{layers}{\link{snowprofileLayers} object}
+
+\item{tests}{\link{snowprofileTests} object}
+
+\item{instabilitySigns}{\link{snowprofileInstabilitySigns} object}
 
 \item{validate}{Validate the object with \link{validate_snowprofile}?}
 
@@ -75,7 +97,7 @@ plot(testProfile)
 
 }
 \seealso{
-\link{summary.snowprofile}, \link{plot.snowprofile}, \link{snowprofileLayers}, \link{SPpairs}
+\link{summary.snowprofile}, \link{plot.snowprofile}, \link{snowprofileLayers}, \link{snowprofileTests}, \link{snowprofileInstabilitySigns}, \link{SPpairs}
 }
 \author{
 shorton, fherla

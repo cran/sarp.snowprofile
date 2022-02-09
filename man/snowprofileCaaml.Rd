@@ -4,18 +4,39 @@
 \alias{snowprofileCaaml}
 \title{Read a Caaml file into a snowprofile object}
 \usage{
-snowprofileCaaml(caamlFile, sourceType = NA)
+snowprofileCaaml(
+  caamlFile,
+  sourceType = NA,
+  readStabilityTests = TRUE,
+  validate = TRUE
+)
 }
 \arguments{
 \item{caamlFile}{'path/to/file.caaml'}
 
-\item{sourceType}{choose 'manual', 'modeled', 'vstation', 'aggregate' or 'whiteboard'; if NA, the default will be chosen by \link{snowprofile}.}
+\item{sourceType}{choose 'manual', 'modeled', 'vstation', 'aggregate' or 'whiteboard'; while this routine has some
+functionality built in to detect sourceTypes under certain circumstances, it needs to be provided in most cases.}
+
+\item{readStabilityTests}{boolean (this is still beta version and can throw errors sometimes)}
+
+\item{validate}{Should the resulting snowprofile object be validated by \link{validate_snowprofile}?}
 }
 \value{
 snowprofile object
 }
 \description{
-Read a Caaml file into a snowprofile object
+Note, that this function only provides a starting point for loading caaml files into R. Currently, caaml files exported from
+niviz.org, or snowpilot.org should be compatible with this routine. However, this routine only extracts some metadata
+and some of the most important layer characteristics. While a temperature profile (that is independent from the layers)
+is extracted, no other variables that can be written into a caaml file are currently being read (such as stability test results, etc).
+}
+\details{
+\itemize{
+\item There is still a bug related to non-numeric aspects (e.g., E instead of 90).
+\item The \link{snowprofileCsv} function provides a lot more flexibility to read in data, if you can choose the format of your
+underlying data. Don't hesitate to reach out though if your caaml files throw errors and you need help! If you extend this
+routine, please also reach out and let us know, so we can update this package with your code extensions.
+}
 }
 \examples{
 
@@ -25,6 +46,9 @@ caamlFile <- system.file('extdata', 'example.caaml', package = 'sarp.snowprofile
 ## read caaml file:
 profile <- snowprofileCaaml(caamlFile, sourceType = 'vstation')
 
+## other file with slighlty different xml namespace, structure, etc (including stability test):
+caamlFile2 <- system.file('extdata', 'example2.caaml', package = 'sarp.snowprofile')
+profile2 <- snowprofileCaaml(caamlFile2, sourceType = 'manual')
 
 }
 \author{
