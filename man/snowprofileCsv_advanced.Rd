@@ -13,7 +13,8 @@ snowprofileCsv_advanced(
   instabilitySigns = c("instabilitySign_type", "instabilitySign_present",
     "instabilitySign_comment"),
   sep = ",",
-  elev.units = "ft"
+  elev.units = "ft",
+  tz = "UTC"
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ snowprofileCsv_advanced(
 \item{sep}{csv column separator}
 
 \item{elev.units}{if set to "ft", the routine will convert to "m". Set to "m" (or anything else) if it should be unchanged}
+
+\item{tz}{time zone (default = 'UTC')}
 }
 \description{
 This routine reads blocks of snowprofile metadata, layers, tests, and stability signs. Columns contain different variables,

@@ -59,7 +59,7 @@ observe the upper part of the snowpack this value refers to the maximum depth of
 
 \item{hn72}{height of new snow within 72 h}
 
-\item{ski_pen}{skier penetration depth (cm)}
+\item{ski_pen}{skier penetration depth (m)}
 
 \item{layers}{\link{snowprofileLayers} object}
 

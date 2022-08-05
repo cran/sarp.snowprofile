@@ -16,6 +16,7 @@
 #'   - layer specific info: deposition date, grain size, ssi, ... (see [snowprofileLayers])
 #'
 #' @param crust.val If a column 'crust' is provided, what value of 'crust' defines MFcr? Mostly, either 2 (default) or 1. See Details.
+#' @param tz time zone (default = 'UTC')
 #' @return snowprofile object
 #'
 #' @details The minimum information required to construct a valid [snowprofile] object is `height`, `gtype` and `hardness`. Currently, substituting `height` with
@@ -79,7 +80,8 @@ snowprofileCsv <- function(path,
                            gtype = "gtype",
                            hardness = "hardness",
                            ...,
-                           crust.val = 2) {
+                           crust.val = 2,
+                           tz = "UTC") {
 
   ## ---Initialization----
   content <- read.csv(file = path, header = header, sep = sep)
@@ -144,7 +146,7 @@ snowprofileCsv <- function(path,
   profile_dots <- as.pairlist(profile_vars)
   if (length(profile_vars) >= 1) names(profile_dots) <- profile_vars
   for (pv in profile_vars) {
-    if (pv == "datetime") profile_dots[[pv]] <- as.POSIXct(content[1, dots[[pv]]])
+    if (pv == "datetime") profile_dots[[pv]] <- as.POSIXct(content[1, dots[[pv]]], tz = tz)
     else profile_dots[[pv]] <- content[1, dots[[pv]]]
   }
   SP <- do.call("snowprofile", c(list(layers = SPlayers),

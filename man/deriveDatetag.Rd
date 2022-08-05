@@ -2,26 +2,57 @@
 % Please edit documentation in R/deriveDatetag.R
 \name{deriveDatetag}
 \alias{deriveDatetag}
+\alias{deriveDatetag.snowprofileSet}
+\alias{deriveDatetag.snowprofile}
+\alias{deriveDatetag.snowprofileLayers}
 \title{Derive datetag from deposition dates in simulated profiles}
 \usage{
-deriveDatetag(x)
+deriveDatetag(x, adjust_bdates = TRUE, ...)
+
+\method{deriveDatetag}{snowprofileSet}(x, adjust_bdates = TRUE, ...)
+
+\method{deriveDatetag}{snowprofile}(x, adjust_bdates = TRUE, ...)
+
+\method{deriveDatetag}{snowprofileLayers}(x, adjust_bdates = TRUE, checkMonotonicity = TRUE, ...)
 }
 \arguments{
-\item{x}{a \link{snowprofile} or \link{snowprofileLayers} object}
+\item{x}{a \link{snowprofileSet}, \link{snowprofile} or \link{snowprofileLayers} object}
+
+\item{adjust_bdates}{boolean switch to compute bdates similar to human interpretation. see Details.}
+
+\item{...}{passed on to subsequent methods}
+
+\item{checkMonotonicity}{check ascending order of layers. This acts as a check for whether multiple layers objects are stacked, which is not allowed.}
 }
 \value{
-The \code{x} object will be returned with added columns \code{datetag} and \code{bdate} (i.e., either as \code{snowprofile}, or \code{snowprofileLayers})
+The input object will be returned with the columns \code{datetag} and \code{bdate} added to the profile layers
 }
 \description{
 This routine derives the datetags of simulated snow profile layers from deposition dates. Datetags usually are deposition dates
 for crust layers, and burial dates for other weak layers (e.g., SH, FC). If no datetags can be derived, a datetag column of NAs will
 nevertheless be added to the snowprofile layers. The routine also adds a \code{bdate} column for burial dates that are calculated along the way.
 }
+\details{
+\code{bdate}s are computed by taking the \code{ddate} of the overlying layer. For snowpack simulations with thin layer
+resolution, this approach yields very similar \code{ddate}s and \code{bdate}s for most layers, since most layers form and
+instantly get buried by another layer of the same storm. To make \code{bdate}s more similar to human interpretation,
+\code{bdate}s can be adjusted, so that (similar) layers with the same \code{ddate} (i.e., same storm) inherit the same \code{bdate}
+(similar means: identical gtype & hardness).
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{snowprofileSet}: for \link{snowprofileSet}s
+
+\item \code{snowprofile}: for \link{snowprofile}s
+
+\item \code{snowprofileLayers}: for \link{snowprofileLayers}
+}}
+
 \examples{
 ## This is not the most meaningful example, but it nicely illustrates the routine:
 print(SPpairs$A_manual)
 
-print(deriveDatetag(SPpairs$A_manual))
+(A_addedDatetags <- deriveDatetag(SPpairs$A_manual))
 
 }
 \author{

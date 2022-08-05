@@ -4,10 +4,12 @@
 \alias{summary.snowprofileSet}
 \title{Summarize multiple snowprofiles}
 \usage{
-\method{summary}{snowprofileSet}(object, ...)
+\method{summary}{snowprofileSet}(object, fast = TRUE, ...)
 }
 \arguments{
 \item{object}{list of snowprofile objects}
+
+\item{fast}{boolean switch to speed up computations, see \link{summary.snowprofile}}
 
 \item{...}{additional arguments for generic method}
 }
@@ -29,6 +31,13 @@ summary(Alpine)
 Shallow <- SPgroup[Metadata$hs < 150]
 summary(Shallow)
 Week2 <- SPtimeline[summary(SPtimeline)$date > '2017-12-15']
+
+
+## time comparison of fast--slow implementation
+## expect 20 sec runtime
+# rbenchmark::benchmark(fast = {Metadata <- summary(SPgroup, fast = TRUE)},
+#                       slow = {Metadata <- summary(SPgroup, fast = FALSE)},
+#                       replications = 10**3)
 
 }
 \seealso{

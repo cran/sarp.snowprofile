@@ -5,6 +5,8 @@
 #' @param Filename path to pro file
 #' @param ProfileDate read a single profile from file (default = NA will read all profiles)
 #' @param tz time zone (default = 'UTC')
+#' @param remove_soil if soil layers are present in PRO file, remove them from snowprofile objects?
+#' @param suppressWarnings boolean switch
 #'
 #' @return a single snowprofile object of list of multiple snowprofile objects
 #'
@@ -48,14 +50,20 @@
 #'
 snowprofilePro <- function(Filename,
                            ProfileDate = NA,
-                           tz = "UTC") {
+                           tz = "UTC",
+                           remove_soil = TRUE,
+                           suppressWarnings = FALSE) {
 
+  if (suppressWarnings) {
+    old.warn <- options(warn = -1)
+    on.exit(options(old.warn))
+  }
   ## Function to lookup variable codes in pro files
   codeLookup <- function(Lines, Code) {
     Row <- Lines[which(startsWith(Lines, Code))]
     Row <- unlist(strsplit(Row, ","))
     Row <- Row[3:length(Row)]
-    Row <- type.convert(Row)
+    Row <- type.convert(Row, as.is = TRUE)
     return(Row)
   }
 
@@ -79,38 +87,89 @@ snowprofilePro <- function(Filename,
       datetime <- codeLookup(TabularProfile, "0500")[2]
       datetime <- as.POSIXct(datetime, format = "%d.%m.%Y %H:%M", tz = tz)
 
+      # Ski pen
+      ski_pen <- NA
+      if ("0607" %in% Codes)
+          ski_pen <- codeLookup(TabularProfile, '0607')  # (m)
+
       ## Decode layer variables
-      Layers <- data.frame(height = codeLookup(TabularProfile, "0501"))
-      if ("0502" %in% Codes)
-          Layers$density <- codeLookup(TabularProfile, "0502")
-      if ("0503" %in% Codes)
-          Layers$temperature <- codeLookup(TabularProfile, "0503")
-      if ("0506" %in% Codes)
-          Layers$lwc <- codeLookup(TabularProfile, "0506")
-      if ("0508" %in% Codes)
-          Layers$dendrictiy <- codeLookup(TabularProfile, "0508")
-      if ("0509" %in% Codes)
-          Layers$sphericity <- codeLookup(TabularProfile, "0509")
-      if ("0511" %in% Codes)
-          Layers$bond_size <- codeLookup(TabularProfile, "0511")
-      if ("0512" %in% Codes)
-          Layers$gsize <- codeLookup(TabularProfile, "0512")
-      if ("0534" %in% Codes)
-          Layers$hardness <- -codeLookup(TabularProfile, "0534")
-      if ("0535" %in% Codes)
-          Layers$ogs <- codeLookup(TabularProfile, "0535")
-      if ("0604" %in% Codes)
-          Layers$ssi <- codeLookup(TabularProfile, "0604")
-      if ("0606" %in% Codes)
-          Layers$ccl <- codeLookup(TabularProfile, "0606")
+      height <- codeLookup(TabularProfile, "0501")
+      nHeight <- length(height)
+      Layers <- data.frame(height = height)
+      if ("0502" %in% Codes) {
+        density <- codeLookup(TabularProfile, "0502")
+        Layers$density <- append(density, rep(NA, times = nHeight - length(density)), after = 0)
+      }
+      if ("0503" %in% Codes) {
+        temperature <- codeLookup(TabularProfile, "0503")
+        Layers$temperature <- append(temperature, rep(NA, times = nHeight - length(temperature)), after = 0)
+      }
+      if ("0506" %in% Codes) {
+        lwc <- codeLookup(TabularProfile, "0506")
+        Layers$lwc <- append(lwc, rep(NA, times = nHeight - length(lwc)), after = 0)
+      }
+      if ("0508" %in% Codes) {
+        dendrictiy <- codeLookup(TabularProfile, "0508")
+        Layers$dendrictiy <- append(dendrictiy, rep(NA, times = nHeight - length(dendrictiy)), after = 0)
+      }
+      if ("0509" %in% Codes) {
+        sphericity <- codeLookup(TabularProfile, "0509")
+        Layers$sphericity <- append(sphericity, rep(NA, times = nHeight - length(sphericity)), after = 0)
+      }
+      if ("0511" %in% Codes) {
+        bond_size <- codeLookup(TabularProfile, "0511")
+        Layers$bond_size <- append(bond_size, rep(NA, times = nHeight - length(bond_size)), after = 0)
+      }
+      if ("0512" %in% Codes) {
+        gsize <- codeLookup(TabularProfile, "0512")
+        Layers$gsize <- append(gsize, rep(NA, times = nHeight - length(gsize)), after = 0)
+      }
+      if ("0523" %in% Codes) {
+        v_strain_rate <- codeLookup(TabularProfile, "0523")
+        Layers$v_strain_rate <- append(v_strain_rate, rep(NA, times = nHeight - length(v_strain_rate)), after = 0)
+      }
+      if ("0533" %in% Codes) {
+        sk38 <- codeLookup(TabularProfile, "0533")
+        Layers$sk38 <- append(sk38, rep(NA, times = nHeight - length(sk38)), after = 0)
+      }
+      if ("0534" %in% Codes) {
+        hardness <- -codeLookup(TabularProfile, "0534")
+        Layers$hardness <- append(hardness, rep(NA, times = nHeight - length(hardness)), after = 0)
+      }
+      if ("0535" %in% Codes) {
+        ogs <- codeLookup(TabularProfile, "0535")
+        Layers$ogs <- append(ogs, rep(NA, times = nHeight - length(ogs)), after = 0)
+      }
+      if ("0540" %in% Codes) {
+        ddate <- codeLookup(TabularProfile, "0540")
+        Layers$ddate <- append(ddate, rep(NA, times = nHeight - length(ddate)), after = 0)
+        Layers$ddate <- as.POSIXct(Layers$ddate, format = "%d.%m.%Y %H:%M", tz = tz)
+      }
+      if ("0601" %in% Codes) {
+        shear_strength <- codeLookup(TabularProfile, "0601")
+        Layers$shear_strength <- append(shear_strength, rep(NA, times = nHeight - length(shear_strength)), after = 0)
+      }
+      if ("0604" %in% Codes) {
+        ssi <- codeLookup(TabularProfile, "0604")
+        Layers$ssi <- append(ssi, rep(NA, times = nHeight - length(ssi)), after = 0)
+      }
+      if ("0606" %in% Codes) {
+        ccl <- codeLookup(TabularProfile, "0606")
+        Layers$ccl <- append(ccl, rep(NA, times = nHeight - length(ccl)), after = 0)
+      }
 
       ## Decode grain class
       if ("0513" %in% Codes) {
         gclass <- codeLookup(TabularProfile, "0513")
         gclass <- gclass[1:(length(gclass) - 1)]
-        Layers$gtype <- sapply(gclass, function(x) ifelse(substr(x, 3, 3) == "2", "MFcr",
-                                                          swisscode[as.integer(substr(x, 1, 1))]))
-        Layers$gtype <- as.factor(Layers$gtype)
+        gtype <- sapply(gclass, function(x) ifelse(substr(x, 3, 3) == "2", "MFcr",
+                                                   swisscode[as.integer(substr(x, 1, 1))]))
+        Layers$gtype <- as.factor(append(gtype, rep(NA, times = nHeight - length(gtype)), after = 0))
+      }
+
+      ## remove soil_layers
+      if (remove_soil) {
+        Layers <- Layers[Layers$height > 0, ]
       }
 
       ## Set NA values
@@ -129,6 +188,8 @@ snowprofilePro <- function(Filename,
                         aspect = as.numeric(StationData$SlopeAzi),
                         type = "modeled",
                         layers = Layers)
+
+      if (!is.na(ski_pen)) SP$ski_pen <- ski_pen
 
       return(SP)
     }
@@ -208,6 +269,7 @@ snowprofilePro <- function(Filename,
 
   }
 
+  if (suppressWarnings) options(old.warn)
   ## Return snowprofile or list of snowprofiles
   return(SP)
 

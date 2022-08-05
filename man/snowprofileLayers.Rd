@@ -16,8 +16,8 @@ snowprofileLayers(
   gtype_sec = as.factor(NA),
   hardness = as.double(NA),
   ddate = as.POSIXct(NA),
-  bdate = as.Date(NA),
-  datetag = as.POSIXct(NA),
+  bdate = as.POSIXct(NA),
+  datetag = as.Date(NA),
   ssi = as.double(NA),
   sphericity = as.double(NA),
   v_strain_rate = as.double(NA),
@@ -59,9 +59,9 @@ should be provided. Note, that also the \code{depth} refers to the top layer int
 
 \item{hardness}{numeric hand hardness (use \link{char2numHHI} to convert from character hardness)}
 
-\item{ddate}{deposition date of layer (POSIXct format)}
+\item{ddate}{deposition date of layer (POSIXct format). WARNING: if you provide character format, the time zone of your computer system will be assumed.}
 
-\item{bdate}{burial date of layer (Date format)}
+\item{bdate}{burial date of layer (POSIXct format). WARNING: if you provide character format, the time zone of your computer system will be assumed.}
 
 \item{datetag}{of layer (i.e., usually corresponds to \code{ddate} for 'MFcr', and to \code{bdate} for all other grain types.)}
 
@@ -119,10 +119,12 @@ snowprofileLayers()
 
 
 ## simple layers example that recycles the hardness 1F+: with warning issued!
+## Try what happens if you provide ddate as character array without a timezone.
 snowprofileLayers(height = c(10, 25, 50),
                   hardness = char2numHHI('1F+'),
-                  gtype = c('FC', NA, 'PP'))
-
+                  gtype = c('FC', NA, 'PP'),
+                  ddate = as.POSIXct(c(NA, NA, "2020-02-15 10:45:00"),
+                                     tz = "Etc/GMT+7"))
 
 ## create snowprofileLayers object from data.frame
 ## and feed it into a snowprofile object:

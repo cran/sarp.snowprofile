@@ -2,26 +2,43 @@
 % Please edit documentation in R/computeTSA.R
 \name{computeTSA}
 \alias{computeTSA}
+\alias{computeTSA.snowprofileSet}
+\alias{computeTSA.snowprofile}
 \title{Compute Threshold Sum Approach (TSA, lemons, yellow flags, 'Nieten')}
 \usage{
-computeTSA(profile, target = c("interface", "layer"))
+computeTSA(x, target = c("interface", "layer"))
+
+\method{computeTSA}{snowprofileSet}(x, target = c("interface", "layer"))
+
+\method{computeTSA}{snowprofile}(x, target = c("interface", "layer"))
 }
 \arguments{
-\item{profile}{a \link{snowprofile} object}
+\item{x}{a \link{snowprofile} or \link{snowprofileSet}}
 
 \item{target}{Do you want to compute the index for the layers or for the layer interfaces? defaults to both.}
 }
 \value{
-the snowprofile object is returned with new layer properties describing the threshold sums. The TSA sums up to 6 indicators,
+New layer properties \code{tsa}/\code{tsa_interface} describing the threshold sums are added to the profile layers. The TSA sums up to 6 indicators,
 whereas >= 5 indicators indicate structurally unstable layers/interfaces.
 }
 \description{
-This routine computes the traditional lemons (german 'Nieten') based on absolute thresholds. Since the thresholds are
+This routine computes the traditional lemons (German 'Nieten') based on absolute thresholds. Since the thresholds are
 defined in Monti (2014) with different thresholds for manual versus observed profiles, this routine switches between the appropriate
 thresholds based on the \verb{$type} field of the input profile. While \code{manual} and \code{whiteboard} profiles get one set of thresholds,
 \code{modeled}, \code{vstation}, and \code{aggregate} type profiles get another set.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{snowprofileSet}: for \link{snowprofileSet}s
+
+\item \code{snowprofile}: for \link{snowprofile}s
+}}
+
 \examples{
+## apply function to snowprofileSet
+profileset <- computeTSA(SPgroup)
+
+## apply function to snowprofile and plot output
 sp <- computeTSA(SPpairs$B_modeled1)
 plot(sp, TempProfile = FALSE, main = "TSA")
 lines(sp$layers$tsa/6*5,
@@ -29,7 +46,6 @@ lines(sp$layers$tsa/6*5,
 lines(sp$layers$tsa_interface/6*5, sp$layers$height, type = "b", xlim = c(0, 5), col = "red")
 abline(h = sp$layers$height, lty = "dotted", col = "grey")
 abline(v = 5/6*5, lty = "dashed")
-
 }
 \references{
 Schweizer, J., & Jamieson, J. B. (2007). A threshold sum approach to stability evaluation of manual snow profiles.

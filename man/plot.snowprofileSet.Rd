@@ -7,13 +7,17 @@
 \method{plot}{snowprofileSet}(
   x,
   SortMethod = c("time", "unsorted", "hs", "elev", "presorted"),
-  ColParam = c("gtype", "hardness", "temperature", "density", "gsize"),
+  ColParam = c("gtype", "hardness", "density", "temp", "gsize", "ssi", "p_unstable",
+    "crit_cut_length", "rta", "percentage"),
   TopDown = FALSE,
   DateStart = NA,
   DateEnd = NA,
   Timeseries_labels = c("weekly", "monthly", NA),
   ylim = NULL,
   OutlineLyrs = FALSE,
+  emphasizeLayers = NULL,
+  colAlpha = NA,
+  colEmphasis = NA,
   OutlineProfile = NULL,
   HorizGrid = TRUE,
   yaxis = TRUE,
@@ -30,6 +34,7 @@
   hardnessOffset = -0.5,
   k = NULL,
   offset = as.Date(NA),
+  add = FALSE,
   ...
 )
 }
@@ -38,7 +43,7 @@
 
 \item{SortMethod}{How to arrange profiles along the x-axis. Options include timeseries (default = 'time'), in existing order of Profiles list ('unsorted'), sorted by HS ('hs'), or elevation ('elev')}
 
-\item{ColParam}{What parameter to show with colour. So far the following types are available: graintype (default), hardness, temperature, density, grainsize.}
+\item{ColParam}{What parameter to show with colour. So far the following types are available: "gtype", "hardness", "density", "temp", "gsize", "ssi", "p_unstable", "crit_cut_length", "rta", "percentage".}
 
 \item{TopDown}{Option to plot by depth instead of height with zero depth on top of plot (default = FALSE)}
 
@@ -51,6 +56,15 @@
 \item{ylim}{Vertical range of plot}
 
 \item{OutlineLyrs}{Switch for outlining layers (default = FALSE)}
+
+\item{emphasizeLayers}{emphasize layers with different transparency than others, or a different color altogether? then set this argument to \code{TRUE} if you want to emphasize all
+labeled layers of interest (aka weak layers), or provide a named list with arguments to a function call to \link{findPWL} to define which layers to emphasize.
+Set either \code{colAlpha} or \code{colEmphasis} to make the emphasis apparent.}
+
+\item{colAlpha}{the transparency setting for all layers (except the ones to be emphasized if you want to emphasize any). This can be useful for example
+if you want to overplot the grain type sequences with another variable, e.g. a percentage from a distribution.}
+
+\item{colEmphasis}{the color of the layers to be emphasized (only if you want a different color than defined by \code{ColParam})}
 
 \item{OutlineProfile}{vector of profile indices that will be outlined to highlight them}
 
@@ -75,7 +89,8 @@
 Note that R will still put padding by default. If you want to prohibit that entirely, specify \code{xaxs ='i'}, or \code{yaxs = 'i'}.}
 
 \item{xPadding}{Padding between xlim and limits of data, default = 0.5.
-Note that R will still put padding by default. If you want to prohibit that entirely, specify \code{xaxs = 'i'}, or \code{yaxs = 'i'}.}
+Note that R will still put padding by default. If you want to prohibit that entirely, specify \code{xaxs = 'i'}, or \code{yaxs = 'i'}. For xPadding, you can provide either a scalar, or
+a length 2 numeric for left and right hand side, respectively.}
 
 \item{hardnessResidual}{Value within \verb{[0, 1]} to control the minimum horizontal space of each layer that will be colored
 irrespective of the layer's hardness. A value of \code{1} corresponds to no hardness being shown.}
@@ -90,13 +105,15 @@ it gets more influential the smaller \code{hardnessScale} gets. Also note, that 
 
 \item{offset}{Provide a Date or POSIXct offset if you want to offset the vertical snow height/depth axis so that the offset date aligns with snow depth/height 0.}
 
+\item{add}{add the plot to an existing plot, or create new plot?}
+
 \item{...}{Additional parameters passed to plot()}
 }
 \description{
 A flexible function to plot multiple snowprofiles either in a timeseries or various types of groups.
 }
 \details{
-The routine allows you to plot colored sequences only, or to include hardness profile information as well. See parameter
+The routine allows you to plot coloured sequences only, or to include hardness profile information as well. See parameter
 \code{hardnessResidual} and the examples for more details.
 To change the font size of labels etc, use \code{par()} with the parameters \code{cex.lab}, \code{cex.axis}, etc.
 }
@@ -140,6 +157,16 @@ k <- order(pwl_exists, decreasing = TRUE)
 plot(SPgroup, SortMethod = 'presorted', k = k, xticklabels = "originalIndices",
      offset = as.Date("2019-01-21"), xlab = "<-- Jan 21 PWL exists | does not exist -->")
 abline(v = max(which(pwl_exists[k]))+0.5, lty = "dashed")
+
+## Emphasize specific layers
+## (i) all labeled layers of interest:
+SPgroup <- snowprofileSet(lapply(SPgroup, labelPWL))  # label layers with default settings
+plot(SPgroup, SortMethod = "hs", emphasizeLayers = TRUE, colAlpha = 0.3)
+## (ii) specific individual layers:
+plot(SPgroup, SortMethod = "hs",
+     emphasizeLayers = list(pwl_gtype = c("SH", "DH"), pwl_date = "2019-01-21"),
+     colAlpha = 0.3, colEmphasis = "black")
+
 
 }
 \seealso{

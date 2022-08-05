@@ -9,15 +9,19 @@ findPWL(
   x,
   pwl_gtype = c("SH", "DH"),
   pwl_date = NA,
-  date_range_earlier = as.difftime(5, units = "days"),
-  date_range_later = as.difftime(0, units = "days"),
-  bdate_range_earlier = as.difftime(1, units = "days"),
-  bdate_range_later = as.difftime(1, units = "days"),
+  date_range = c(-5, 0),
+  date_range_earlier = as.difftime(date_range[1], units = "days"),
+  date_range_later = as.difftime(date_range[2], units = "days"),
+  bdate_range = c(-1, 1),
+  bdate_range_earlier = as.difftime(bdate_range[1], units = "days"),
+  bdate_range_later = as.difftime(bdate_range[2], units = "days"),
   threshold_gtype = pwl_gtype,
   threshold_gsize = NA,
   threshold_TSA = NA,
   threshold_RTA = NA,
-  threshold_NA = TRUE
+  threshold_SK38 = NA,
+  threshold_RC = NA,
+  threshold_PU = NA
 )
 
 labelPWL(x, ...)
@@ -27,18 +31,23 @@ labelPWL(x, ...)
 
 \item{pwl_gtype}{a vector of grain types of interest}
 
-\item{pwl_date}{a date of interest given as character ('YYYY-MM-DD') or as POSIXct; set to \code{NA} to ignore dates.}
+\item{pwl_date}{a date of interest given as character ('YYYY-MM-DD') or as POSIXct; set to \code{NA} to ignore dates. If given as POSIXct, time comparison between layer dates and pwl_date
+will consider the times of day (i.e., hours, etc). Otherwise only consider year/month/days.}
 
-\item{date_range_earlier}{a \link{difftime} object that defines a date search window prior to \code{pwl_date}. This date range is applied to \code{ddate}s (deposition dates),
+\item{date_range}{a numeric array of length 2 that defines a date search window around \code{pwl_date}. This date range is applied to \code{ddate}s (deposition dates),
 or if these are not available to \code{datetag}s.}
 
-\item{date_range_later}{analogous to \code{date_range_earlier}}
+\item{date_range_earlier}{a \link{difftime} object of \code{date_range[1]} (must be negative).}
 
-\item{bdate_range_earlier}{analogous to \code{date_range_earlier}, but applied to \code{bdate}s (burial dates).}
+\item{date_range_later}{a \link{difftime} object of \code{date_range[2]} (must be positive).}
 
-\item{bdate_range_later}{analogous to \code{bdate_range_earlier}.}
+\item{bdate_range}{a numeric array of length 2 that defines a date search window around \code{pwl_date}. This date range is applied to \code{bdate}s (burial dates)}
 
-\item{threshold_gtype}{specific grain types that are only deemed a PWL if they pass a certain threshold (see next parameters)}
+\item{bdate_range_earlier}{a \link{difftime} object of \code{bdate_range[1]} (must be negative).}
+
+\item{bdate_range_later}{a \link{difftime} object of \code{bdate_range[2]} (must be positive).}
+
+\item{threshold_gtype}{specific grain types that are only deemed a PWL if they pass one or multiple thresholds (see next parameters)}
 
 \item{threshold_gsize}{a threshold grain size in order to deem \code{threshold_gtype} a PWL; set to \code{NA} to ignore grain sizes.}
 
@@ -46,7 +55,11 @@ or if these are not available to \code{datetag}s.}
 
 \item{threshold_RTA}{a threshold RTA value (see \link{computeRTA}) in order to deem \code{threshold_gtype} a PWL; set to \code{NA} to ignore RTA.}
 
-\item{threshold_NA}{if the threshold you want to apply to \code{threshold_gtype} is \code{NA}, do you then want to deem the layer a PWL (i.e., set \code{TRUE}) or not (i.e., set to \code{FALSE})?}
+\item{threshold_SK38}{a threshold SK38 in order to deem \code{threshold_gtype} a PWL; set to \code{NA} to ignore this threshold.}
+
+\item{threshold_RC}{a threshold critical crack length in order to deem \code{threshold_gtype} a PWL; set to \code{NA} to ignore this threshold.}
+
+\item{threshold_PU}{a threshold value for p_unstable in order to deem \code{threshold_gtype} a PWL; set to \code{NA} to ignore this threshold.}
 
 \item{...}{passed on to \link{findPWL}}
 }
@@ -57,13 +70,20 @@ or if these are not available to \code{datetag}s.}
 }
 \description{
 Find one or more layers of interest, such as persistent weak layers (PWL) in a snowprofile or snowprofileLayers object based on combinations of grain type, datetag, grain size,
-and stability indices (TSA/ RTA) of the layer. The routine can also be used for searching for crusts (or any other grain types).
+and stability indices (TSA/ RTA/ critical crack length/ p_unstable) of the layer. The routine can also be used for searching for crusts (or any other grain types).
 }
 \details{
-In case date considerations are included in your search: at least one of the two conditions \emph{(b)date_range_earlier} \strong{AND} at least one
-of the two conditions \emph{(b)date_range_later} needs to be satisfied to return a given layer. If the input object contains deposition dates (\code{ddate}, mostly in simulated profiles),
-then the date window is applied to both \code{ddate} and a newly computed \code{bdate};
+In case date considerations are included in your search, either one of the date window conditions needs to be satisfied to return a given layer:
+\itemize{
+\item \code{ddate} or \code{datetag} within \code{date_range}, \strong{or}
+\item \code{bdate} within \code{bdate_range}
+}
+
+If the input object contains deposition dates (\code{ddate}, mostly in simulated profiles),
+but no \code{bdates}, they are automatically computed by \link{deriveDatetag};
 otherwise the date window is applied to the \code{datetag} (mostly for manual profiles).
+
+If you apply thresholds to your search, only layers are returned that satisfy \emph{at least one} of the provided thresholds.
 
 The \code{labelPWL} wrapper function is primarily used by \code{sarp.snowprofile.alignment::averageSP}.
 }
@@ -91,10 +111,38 @@ SPpairs$A_modeled$layers[findPWL(SPpairs$A_modeled, pwl_gtype = c("SH", "DH", "F
                                  threshold_TSA = 4, threshold_gtype = c("FC", "FCxr")), ]
 
 ## searching for a specific pwl_date:
-SPpairs$A_manual$layers[findPWL(SPpairs$A_manual, pwl_date = "2019-02-18"), ]
-## Why is there a layer included without date information?!
-## --> because the layers 'bdate' can be computed from the known 'ddate' of the layer above
-## and the resulting 'bdate' lies within the allowed 'date_range'...
+## let's construct one layer and an array of pwl_dates
+tl <- snowprofileLayers(height = 1, gtype = "SH",
+                        ddate = as.POSIXct("2020-12-15"),
+                        bdate = as.POSIXct("2020-12-20"))
+pwl_dates <- paste0("2020-12-", seq(14, 22))
+## which pwl_date will 'find' that layer?
+sapply(pwl_dates, function(dt) length(findPWL(tl, pwl_date = dt)) > 0)
+## same example, but with bdate being NA:
+tl <- snowprofileLayers(height = 1, gtype = "SH",
+                        ddate = as.POSIXct("2020-12-15"),
+                        bdate = as.POSIXct(NA), dropNAs = FALSE)
+sapply(pwl_dates, function(dt) length(findPWL(tl, pwl_date = dt)) > 0)
+
+## pwl_date example with proper profile:
+sp <- deriveDatetag(SPpairs$A_manual)
+sp$layers
+pwl_dates <- paste0("2019-02-", seq(18, 26))
+names(pwl_dates) <- pwl_dates
+## which pwl_date will 'find' the two layers with (b)date labels?
+list(pwl_date = lapply(pwl_dates, function(dt) {
+  sp$layers[findPWL(sp, pwl_gtype = c("SH", "FC"), pwl_date = dt),
+            c("height", "gtype", "ddate", "bdate")]
+}))
+
+## same example as above, but including TSA threshold:
+sp <- computeTSA(sp)
+## the SH layer has TSA 5, the FC layer has TSA 4:
+list(pwl_date = lapply(pwl_dates, function(dt) {
+  sp$layers[findPWL(sp, pwl_gtype = c("SH", "FC"), pwl_date = dt, threshold_TSA = 5),
+            c("height", "gtype", "ddate", "bdate")]
+}))
+## --> no more FC layer in output since its TSA value is below the threshold!
 
 ## can also be used to search for crusts:
 SPpairs$A_manual$layers[findPWL(SPpairs$A_manual, pwl_gtype = "MFcr"), ]

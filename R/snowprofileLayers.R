@@ -42,8 +42,8 @@ is.snowprofileLayers <- function(x) inherits(x, "snowprofileLayers")
 #' @param gtype grain type (character or factor)
 #' @param gtype_sec secondary grain type (character or factor)
 #' @param hardness numeric hand hardness (use [char2numHHI] to convert from character hardness)
-#' @param ddate deposition date of layer (POSIXct format)
-#' @param bdate burial date of layer (Date format)
+#' @param ddate deposition date of layer (POSIXct format). WARNING: if you provide character format, the time zone of your computer system will be assumed.
+#' @param bdate burial date of layer (POSIXct format). WARNING: if you provide character format, the time zone of your computer system will be assumed.
 #' @param datetag of layer (i.e., usually corresponds to `ddate` for 'MFcr', and to `bdate` for all other grain types.)
 #' @param ssi snow stability index (numeric)
 #' @param sphericity between 0 and 1
@@ -77,10 +77,12 @@ is.snowprofileLayers <- function(x) inherits(x, "snowprofileLayers")
 #'
 #'
 #' ## simple layers example that recycles the hardness 1F+: with warning issued!
+#' ## Try what happens if you provide ddate as character array without a timezone.
 #' snowprofileLayers(height = c(10, 25, 50),
 #'                   hardness = char2numHHI('1F+'),
-#'                   gtype = c('FC', NA, 'PP'))
-#'
+#'                   gtype = c('FC', NA, 'PP'),
+#'                   ddate = as.POSIXct(c(NA, NA, "2020-02-15 10:45:00"),
+#'                                      tz = "Etc/GMT+7"))
 #'
 #' ## create snowprofileLayers object from data.frame
 #' ## and feed it into a snowprofile object:
@@ -157,8 +159,8 @@ snowprofileLayers <- function(height = as.double(NA),
                               gtype_sec = as.factor(NA),
                               hardness = as.double(NA),
                               ddate = as.POSIXct(NA),
-                              bdate = as.Date(NA),
-                              datetag = as.POSIXct(NA),
+                              bdate = as.POSIXct(NA),
+                              datetag = as.Date(NA),
                               ssi = as.double(NA),
                               sphericity = as.double(NA),
                               v_strain_rate = as.double(NA),
@@ -360,13 +362,17 @@ format_snowprofileLayers <- function(obj, target = "all", hs = NA, maxObservedDe
   ## ---Type conversions----
   emptySPL <- snowprofileLayers(validate = FALSE, dropNAs = FALSE)
   dtypes <- sapply(emptySPL, function(x) class(x)[1])
-  for (col in cols) {  # convert standard object columns to correct classes
-    if (col %in% names(dtypes)){
-      if (unname(dtypes[col]) == "POSIXct" & !inherits(object[, col], "POSIXct")) {  # hack to prevent errors while converting empty strings to POSIXct
-        object[which(object[, col] == ""), col] <- NA
-      }
-      object[, col] <- do.call(paste0("as.", unname(dtypes[col])), list(x = object[, col]))  # do type conversion
+  names_dtypes <- names(dtypes)
+  dtypes_present <- sapply(object, function(x) class(x)[1])
+  names_dtypes_present <- names(dtypes_present)
+  ## which standard cols are not of correct class?
+  repair_cols <- names(which(dtypes[names_dtypes_present[names_dtypes_present %in% names_dtypes]] != dtypes_present[names_dtypes_present %in% names_dtypes]))  #names_dtypes_present[dtypes[names_dtypes_present[names_dtypes_present %in% names_dtypes]] != dtypes_present[names_dtypes_present %in% names_dtypes]]
+  for (col in repair_cols) {  # convert standard object columns to correct classes
+    if (dtypes[col] == "POSIXct" & dtypes_present[col] != "POSIXct") {  # hack to prevent errors while converting empty strings to POSIXct
+      object[which(object[, col] == ""), col] <- NA
     }
+    object[, col] <- do.call(paste0("as.", unname(dtypes[col])), list(x = object[, col]))  # do type conversion
+    ## WARNING: applied to POSIXct types, this might cause a change of timezones! --> user better provides POSIXct type when neccessary!
   }
 
   ## ---Final assertions: validate input----
@@ -427,13 +433,13 @@ validate_snowprofileLayers <- function(object, silent = FALSE) {
     }
   }
 
-  date_vars <- c('bdate')
+  date_vars <- c('datetag')
   for (v in date_vars){
     if (v %in% cols)
       try(if (!inherits(object[[v]], 'Date')) err <- paste(err, paste(v, "needs to be of class Date"), sep = "\n "))
   }
 
-  posix_vars <- c('ddate')
+  posix_vars <- c('ddate', 'bdate')
   for (v in posix_vars){
     if (v %in% cols)
       try(if (!inherits(object[[v]], 'POSIXct')) err <- paste(err, paste(v, "needs to be of class POSIXct"), sep = "\n "))

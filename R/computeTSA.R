@@ -1,14 +1,14 @@
 #' Compute Threshold Sum Approach (TSA, lemons, yellow flags, 'Nieten')
 #'
-#' This routine computes the traditional lemons (german 'Nieten') based on absolute thresholds. Since the thresholds are
+#' This routine computes the traditional lemons (German 'Nieten') based on absolute thresholds. Since the thresholds are
 #' defined in Monti (2014) with different thresholds for manual versus observed profiles, this routine switches between the appropriate
 #' thresholds based on the `$type` field of the input profile. While `manual` and `whiteboard` profiles get one set of thresholds,
 #' `modeled`, `vstation`, and `aggregate` type profiles get another set.
 #'
-#' @param profile a [snowprofile] object
+#' @param x a [snowprofile] or [snowprofileSet]
 #' @param target Do you want to compute the index for the layers or for the layer interfaces? defaults to both.
 #'
-#' @return the snowprofile object is returned with new layer properties describing the threshold sums. The TSA sums up to 6 indicators,
+#' @return New layer properties `tsa`/`tsa_interface` describing the threshold sums are added to the profile layers. The TSA sums up to 6 indicators,
 #' whereas >= 5 indicators indicate structurally unstable layers/interfaces.
 #'
 #' @seealso [computeRTA]
@@ -20,7 +20,24 @@
 #' Cold Regions Science and Technology, 103, 82–90. https://doi.org/10.1016/j.coldregions.2014.03.009
 #'
 #' @author fherla
+#' @export
+computeTSA <- function(x, target = c("interface", "layer")) UseMethod("computeTSA")
+
+#' @describeIn computeTSA for [snowprofileSet]s
 #' @examples
+#' ## apply function to snowprofileSet
+#' profileset <- computeTSA(SPgroup)
+#'
+#' @export
+computeTSA.snowprofileSet <- function(x, target = c("interface", "layer")) {
+  if (!is.snowprofileSet(x)) stop("x is not a snowprofileSet")
+  x <- snowprofileSet(lapply(x, computeTSA.snowprofile, target = target))
+  return(x)
+}
+
+#' @describeIn computeTSA for [snowprofile]s
+#' @examples
+#' ## apply function to snowprofile and plot output
 #' sp <- computeTSA(SPpairs$B_modeled1)
 #' plot(sp, TempProfile = FALSE, main = "TSA")
 #' lines(sp$layers$tsa/6*5,
@@ -28,13 +45,12 @@
 #' lines(sp$layers$tsa_interface/6*5, sp$layers$height, type = "b", xlim = c(0, 5), col = "red")
 #' abline(h = sp$layers$height, lty = "dotted", col = "grey")
 #' abline(v = 5/6*5, lty = "dashed")
-#'
 #' @export
-computeTSA <- function(profile, target = c("interface", "layer")) {
+computeTSA.snowprofile <- function(x, target = c("interface", "layer")) {
 
-  if (!is.snowprofile(profile)) stop("profile is not a snowprofile object")
+  if (!is.snowprofile(x)) stop("x is not a snowprofile object")
   ## --- Initialization ----
-  lyrs <- profile$layers
+  lyrs <- x$layers
   if (!"gsize" %in% names(lyrs)) {
     if ("gsize_avg" %in% names(lyrs)) lyrs$gsize <- lyrs$gsize_avg
     if ("gsize_max" %in% names(lyrs)) lyrs$gsize <- lyrs$gsize_max
@@ -47,7 +63,7 @@ computeTSA <- function(profile, target = c("interface", "layer")) {
   } else {
 
     ## define thresholds
-    if (profile$type %in% c("manual", "whiteboard")) {
+    if (x$type %in% c("manual", "whiteboard")) {
       thresh_gtype <- c("FC", "FCxr", "DH", "SH")
       thresh_hardness <- 1.3
       thresh_gsize <- 1.25
@@ -126,7 +142,7 @@ computeTSA <- function(profile, target = c("interface", "layer")) {
     }
   }
 
-  profile$layers <- lyrs
-  return(profile)
+  x$layers <- lyrs
+  return(x)
 
 }

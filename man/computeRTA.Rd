@@ -2,31 +2,51 @@
 % Please edit documentation in R/computeRTA.R
 \name{computeRTA}
 \alias{computeRTA}
+\alias{computeRTA.snowprofileSet}
+\alias{computeRTA.snowprofile}
 \title{Compute Relative Threshold Sum approach (RTA)}
 \usage{
-computeRTA(profile, target = c("interface", "layer"))
+computeRTA(x, target = c("interface", "layer"))
+
+\method{computeRTA}{snowprofileSet}(x, target = c("interface", "layer"))
+
+\method{computeRTA}{snowprofile}(x, target = c("interface", "layer"))
 }
 \arguments{
-\item{profile}{a \link{snowprofile} object, whose layer properties are entirely known (i.e., no NAs in gtype, hardness, gsize allowed!)}
+\item{x}{a \link{snowprofile} or \link{snowprofileSet}. Profile layer properties must be known for all layers (i.e., no NAs in gtype, hardness, gsize allowed!)}
 
 \item{target}{Do you want to compute the index for the layers or for the layer interfaces? defaults to both.}
 }
 \value{
-the snowprofile object is returned with new layer properties describing the index. The index ranges between \verb{[0, 1]}, whereas values > 0.8
-indicate structurally unstable layers/interfaces.
+The input object will be returned with the new layer properties \code{rta}/\code{rta_interface} describing the RTA index added to the profile layers.
+The index ranges between \verb{[0, 1]}, whereas values > 0.8 indicate structurally unstable layers/interfaces.
 }
 \description{
 Monti, F., & Schweizer, J. (2013). A relative difference approach to detect potential weak layers within a snow profile.
 Proceedings of the 2013 International Snow Science Workshop, Grenoble, France, 339–343. Retrieved from https://arc.lib.montana.edu/snow-science/item.php?id=1861
 }
+\details{
+\strong{NOTE} that this function currently does not yield identical results to the RTA implementation in SNOWPACK.
+High-level patterns agree, though. Working on it..
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{snowprofileSet}: for \link{snowprofileSet}s
+
+\item \code{snowprofile}: for \link{snowprofile}s
+}}
+
 \examples{
+## apply function to snowprofileSet
+profileset <- computeRTA(SPgroup)
+
+## apply function to snowprofile and plot output
 sp <- computeRTA(SPpairs$B_modeled1)
 plot(sp, TempProfile = FALSE, main = "RTA")
 lines(sp$layers$rta*5, sp$layers$height - 0.5*sp$layers$thickness, type = "b", xlim = c(0, 5))
 lines(sp$layers$rta_interface*5, sp$layers$height, type = "b", xlim = c(0, 5), col = "red")
 abline(h = sp$layers$height, lty = "dotted", col = "grey")
 abline(v = 0.8*5, lty = "dashed")
-
 }
 \seealso{
 \link{computeTSA}

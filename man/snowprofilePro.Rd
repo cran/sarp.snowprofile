@@ -4,7 +4,13 @@
 \alias{snowprofilePro}
 \title{Construct snowprofile object from PRO file}
 \usage{
-snowprofilePro(Filename, ProfileDate = NA, tz = "UTC")
+snowprofilePro(
+  Filename,
+  ProfileDate = NA,
+  tz = "UTC",
+  remove_soil = TRUE,
+  suppressWarnings = FALSE
+)
 }
 \arguments{
 \item{Filename}{path to pro file}
@@ -12,6 +18,10 @@ snowprofilePro(Filename, ProfileDate = NA, tz = "UTC")
 \item{ProfileDate}{read a single profile from file (default = NA will read all profiles)}
 
 \item{tz}{time zone (default = 'UTC')}
+
+\item{remove_soil}{if soil layers are present in PRO file, remove them from snowprofile objects?}
+
+\item{suppressWarnings}{boolean switch}
 }
 \value{
 a single snowprofile object of list of multiple snowprofile objects

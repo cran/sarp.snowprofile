@@ -13,7 +13,8 @@ snowprofileCsv(
   gtype = "gtype",
   hardness = "hardness",
   ...,
-  crust.val = 2
+  crust.val = 2,
+  tz = "UTC"
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ See Details and Examples for more information.}
 }}
 
 \item{crust.val}{If a column 'crust' is provided, what value of 'crust' defines MFcr? Mostly, either 2 (default) or 1. See Details.}
+
+\item{tz}{time zone (default = 'UTC')}
 }
 \value{
 snowprofile object

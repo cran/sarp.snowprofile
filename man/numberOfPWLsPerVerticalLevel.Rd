@@ -18,7 +18,7 @@ This function returns a \code{table} object
 }
 \description{
 This is a wrapper function to bin several weak layers (or crusts) into vertical levels.
-The layers to be binned can be controled with a provided index vector for full customization.
+The layers to be binned can be controlled with a provided index vector for full customization.
 }
 \examples{
 SH_idx <- findPWL(SPpairs$C_day1, pwl_gtype = "SH")

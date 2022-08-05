@@ -177,7 +177,7 @@ new_snowprofile <- function(station = character(),
 #' @param comment character string with any text comments
 #' @param hn24 height of new snow within 24 h
 #' @param hn72 height of new snow within 72 h
-#' @param ski_pen skier penetration depth (cm)
+#' @param ski_pen skier penetration depth (m)
 #' @param layers [snowprofileLayers] object
 #' @param tests [snowprofileTests] object
 #' @param instabilitySigns [snowprofileInstabilitySigns] object
@@ -372,9 +372,6 @@ snowprofile <- function(station = as.character(NA),
 #'
 validate_snowprofile <- function(object, silent = FALSE) {
 
-  ## only test class snowprofile objects:
-  if (!is.snowprofile(object)) stop("Needs to be a snowprofile object!")
-
   ## initialize error string:
   err <- NULL
   objNames <- names(object)
@@ -382,6 +379,8 @@ validate_snowprofile <- function(object, silent = FALSE) {
   knownNames <- c(names(snowprofile(validate = FALSE, dropNAs = FALSE)), "psum", "psum24")
   knownNames <- knownNames[order(knownNames)]  # sort alphabetically
 
+  ## class snowprofile
+  if (!is.snowprofile(object)) err <- paste(err, paste0("Not of class snowprofile, but of class ", paste0(class(object), collapse = ", "), "!"), sep = "\n ")
 
   ## mandatory fields:  IMPORTANT: needs to be synced manually with mandatory_fields defined in snowprofile constructor!!
   mandatory_fields <- mandatory_fields <- c("station", "station_id", "datetime", "date", "latlon",

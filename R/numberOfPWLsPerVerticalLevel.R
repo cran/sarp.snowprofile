@@ -1,7 +1,7 @@
 #' Count number of PWLs per vertical level
 #'
 #' This is a wrapper function to bin several weak layers (or crusts) into vertical levels.
-#' The layers to be binned can be controled with a provided index vector for full customization.
+#' The layers to be binned can be controlled with a provided index vector for full customization.
 #'
 #' @param x [snowprofile] or [snowprofileLayers] object
 #' @param pwl_idx an index vector that corresponds to the layers of interest. Tip: this can also be a call to [findPWL], see examples.

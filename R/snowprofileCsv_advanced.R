@@ -13,6 +13,7 @@
 #' @param instabilitySigns column names of block [snowprofileInstabilitySigns]
 #' @param sep csv column separator
 #' @param elev.units if set to "ft", the routine will convert to "m". Set to "m" (or anything else) if it should be unchanged
+#' @param tz time zone (default = 'UTC')
 #'
 #' @examples
 #' ## load example csv file that ships with package:
@@ -25,13 +26,15 @@
 #' plot(profile)
 #'
 #' @export
+# TODO: include proper handling of timezones for creating POSIXct datetime objects
 snowprofileCsv_advanced <- function(csvFile,
                                     meta = c("uid", "hs", "maxObservedDepth", "comment"),
                                     layers = c("depth", "height", "gtype", "hardness", "datetag", "gsize", "gtype_sec", "layer_comment"),
                                     tests = c("test", "result", "fract_char", "score", "test_depth", "test_comment"),
                                     instabilitySigns = c("instabilitySign_type", "instabilitySign_present", "instabilitySign_comment"),
                                     sep = ",",
-                                    elev.units = "ft") {
+                                    elev.units = "ft",
+                                    tz = "UTC") {
   ## ---Initialization----
   content <- read.csv(file = csvFile, header = TRUE, sep = sep)
 
@@ -81,7 +84,7 @@ snowprofileCsv_advanced <- function(csvFile,
   if ("gtype" %in% layers) layerFrame[, "gtype"] <- as.factor(layerFrame[, "gtype"])
   if ("gtype_sec" %in% layers) layerFrame[, "gtype_sec"] <- as.factor(layerFrame[, "gtype_sec"])
   if ("hardness" %in% layers) layerFrame[, "hardness"] <- sapply(layerFrame[, "hardness"], char2numHHI)
-  if ("datetag" %in% layers) layerFrame[, "datetag"] <- as.POSIXct(layerFrame[, "datetag"])
+  if ("datetag" %in% layers) layerFrame[, "datetag"] <- as.POSIXct(layerFrame[, "datetag"], tz = tz)
   if ("gsize" %in% layers) layerFrame[, "gsize"] <- as.double(layerFrame[, "gsize"])
   if ("layer_comment" %in% layers) cnames[cnames == "layer_comment"] <- "comment"
 
@@ -129,7 +132,7 @@ snowprofileCsv_advanced <- function(csvFile,
   SPmeta <- as.list(content[1, meta_auto])
   names(SPmeta) <- meta_auto
   if ("aspect" %in% meta_auto) SPmeta[["aspect"]] <- char2numAspect(SPmeta[["aspect"]])
-  if ("datetime" %in% meta_auto) SPmeta[["datetime"]] <- as.POSIXct(SPmeta[["datetime"]])
+  if ("datetime" %in% meta_auto) SPmeta[["datetime"]] <- as.POSIXct(SPmeta[["datetime"]], tz = tz)
   if ("elev" %in% meta_auto) {
     if (elev.units == "ft") SPmeta[["elev"]] <- round(SPmeta[["elev"]] / 3.281)
   }

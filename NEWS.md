@@ -1,3 +1,16 @@
+# sarp.snowprofile 1.3.1.9000 (under development)
+
+# sarp.snowprofile 1.3.0
+
+  * Introduce a switch to compute profile summaries *faster* (see `summary.snowprofile` and `summary.snowprofileSet`)
+  * Fix bug in `snowprofilePRO` when soil layers where present; and: read SK38 if present
+  * Introduce function `computeSLABrhogs` to characterize cohesion of slabs (and also `computeSLABrho` for mean slab density)
+  * Adjust method to compute burial dates of layers to align more closely with human interpretation. see `deriveDatetag`
+  * Fix minor bug in `findPWL`: time window search ranges are now applied more transparent and meaningful
+  * Properly define popular generics with methods for the different classes (see e.g., `?computeRTA`, `?deriveDatetag`)
+  * `plot.snowprofileSet`
+      - Introduce coloring of snowprofileSet plots according to stability indices with a compound color palette that allows identifying of index-specific classification thresholds (see `?plot.snowprofileSet`,  `?getColoursStability`, `?getColoursPercentage`)
+      - add many new features for customizing snowprofileSet plots (e.g., emphasize specific layers, overplot timeseries with stability index, etc..)
 
 # sarp.snowprofile 1.2.0
 

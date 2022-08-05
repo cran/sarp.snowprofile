@@ -14,7 +14,19 @@
 
 <title>Introduction to the sarp.snowprofile package</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -125,7 +137,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -137,28 +329,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">Introduction to the sarp.snowprofile package</h1>
+<h1 class="title toc-ignore">Introduction to the sarp.snowprofile
+package</h1>
 
 
 
-<p>Functions to import/export various formats of snow profiles, with basic formatting and visualization functions.</p>
+<p>Functions to import/export various formats of snow profiles, with
+basic formatting and visualization functions.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sarp.snowprofile)</span></code></pre></div>
 <div id="snowprofile-objects" class="section level2">
 <h2>1. Snowprofile objects</h2>
-<p>The package uses S3 classes for individual snow profiles (class <code>snowprofile</code>) or lists of multiple snow profiles (class <code>snowprofileSet</code>). Objects with these classes can be created, manipulated, and visualized.</p>
-<p>A <code>snowprofile</code> object contains data about a snow stratigraphy profile. It is structured as a <code>list</code> with metadata (e.g. profile name and location) and a <code>data.frame</code> containing layer properties. Mandatory parts of a <code>snowprofile</code> object include:</p>
+<p>The package uses S3 classes for individual snow profiles (class
+<code>snowprofile</code>) or lists of multiple snow profiles (class
+<code>snowprofileSet</code>). Objects with these classes can be created,
+manipulated, and visualized.</p>
+<p>A <code>snowprofile</code> object contains data about a snow
+stratigraphy profile. It is structured as a <code>list</code> with
+metadata (e.g. profile name and location) and a <code>data.frame</code>
+containing layer properties. Mandatory parts of a
+<code>snowprofile</code> object include:</p>
 <ul>
-<li><code>station</code> and <code>station_id</code> provide a profile name</li>
+<li><code>station</code> and <code>station_id</code> provide a profile
+name</li>
 <li><code>datetime</code> timestamp</li>
-<li><code>latlon</code>, <code>elev</code>, <code>angle</code>, <code>aspect</code> location information</li>
+<li><code>latlon</code>, <code>elev</code>, <code>angle</code>,
+<code>aspect</code> location information</li>
 <li><code>hs</code> total snow height</li>
-<li><code>layers</code> a <code>data.frame</code> of class <code>snowprofileLayers</code> that contains layer properties (each row is a layer and each column is a property such as depth or grain size).</li>
+<li><code>layers</code> a <code>data.frame</code> of class
+<code>snowprofileLayers</code> that contains layer properties (each row
+is a layer and each column is a property such as depth or grain
+size).</li>
 </ul>
-<p>A <code>snowprofileSet</code> object is simply a <code>list</code> of multiple <code>snowprofile</code> objects.</p>
-<p>The package includes sample data packaged into three <code>snowprofileSet</code> objects:</p>
+<p>A <code>snowprofileSet</code> object is simply a <code>list</code> of
+multiple <code>snowprofile</code> objects.</p>
+<p>The package includes sample data packaged into three
+<code>snowprofileSet</code> objects:</p>
 <ul>
-<li><code>SPgroup</code> contains 12 profiles from different locations with the same timestamp</li>
-<li><code>SPtimeline</code> contains 11 profiles from the same location with different timestamps</li>
+<li><code>SPgroup</code> contains 12 profiles from different locations
+with the same timestamp</li>
+<li><code>SPtimeline</code> contains 11 profiles from the same location
+with different timestamps</li>
 <li><code>SPpairs</code> contains various other snow profiles</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Print the structure of a single `snowprofile` object</span></span>
@@ -194,7 +404,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  $ date            : Date[1:1], format: &quot;2018-11-21&quot;
 ##  $ maxObservedDepth: num 111
 ##  - attr(*, &quot;class&quot;)= chr &quot;snowprofile&quot;</code></pre>
-<p>Check out an empty snowprofile object to understand which information can potentially go where:</p>
+<p>Check out an empty snowprofile object to understand which information
+can potentially go where:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">snowprofile</span>(<span class="at">dropNAs =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>##                  MetaData
 ## station                NA
@@ -230,7 +441,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="profile-creation" class="section level2">
 <h2>2. Profile creation</h2>
-<p>The package includes functions to create a <code>snowprofile</code> object by importing common file formats as well as provides constructor functions to manually create a <code>snowprofile</code>.</p>
+<p>The package includes functions to create a <code>snowprofile</code>
+object by importing common file formats as well as provides constructor
+functions to manually create a <code>snowprofile</code>.</p>
 <div id="import-profiles-from-file" class="section level3">
 <h3>2.1 Import profiles from file</h3>
 <p>Import functions for generic snow profiles include::</p>
@@ -238,13 +451,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>CAAML (<code>snowprofileCaaml</code>)</li>
 <li>csv (<code>snowprofileCsv</code>)</li>
 </ul>
-<p>and import functions for simulated profiles produced with the snow cover model <a href="https://models.slf.ch/p/snowpack/">SNOWPACK</a> include:</p>
+<p>and import functions for simulated profiles produced with the snow
+cover model <a href="https://models.slf.ch/p/snowpack/">SNOWPACK</a>
+include:</p>
 <ul>
 <li>prf (<code>snowprofilePrf</code>)</li>
 <li>pro (<code>snowprofilePro</code>)</li>
 <li>sno (<code>snowprofileSno</code>)</li>
 </ul>
-<p>Note that prf and pro files contain multiple profiles and thus the import functions return a <code>snowprofileSet</code>, while CAAML, csv, and sno files return a single <code>snowprofile</code>.</p>
+<p>Note that prf and pro files contain multiple profiles and thus the
+import functions return a <code>snowprofileSet</code>, while CAAML, csv,
+and sno files return a single <code>snowprofile</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Import a CAAML file</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Filename &lt;- &quot;path/to/file.caaml&quot;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Profile &lt;- snowprofileCaaml(Filename)</span></span>
@@ -253,20 +470,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># CaamlFiles &lt;- list.files(&#39;path/to/caamlprofiles&#39;, full.names = T)</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Profiles &lt;- lapply(CaamlFiles, snowprofileCaaml)</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Profiles &lt;- snowprofileSet(Profiles)</span></span></code></pre></div>
-<p>An additional parser <code>readSmet</code> is also provided to read other input and output files from SNOWPACK.</p>
+<p>An additional parser <code>readSmet</code> is also provided to read
+other input and output files from SNOWPACK.</p>
 </div>
 <div id="manually-construct-profiles" class="section level3">
 <h3>2.2 Manually construct profiles</h3>
-<p>To manually create a <code>snowprofile</code> object see the help pages for the constructor functions <code>snowprofile()</code> and <code>snowprofileLayers()</code> where metadata and layer properties are provided as function arguments.</p>
+<p>To manually create a <code>snowprofile</code> object see the help
+pages for the constructor functions <code>snowprofile()</code> and
+<code>snowprofileLayers()</code> where metadata and layer properties are
+provided as function arguments.</p>
 </div>
 <div id="formatting-profiles" class="section level3">
 <h3>2.3 Formatting profiles</h3>
-<p>Import and constructor functions perform several validation checks for consistent structure (e.g. variable names, consistent layer thickness/depth/height). Sometimes profiles may be malformatted (e.g. files have different formatting than the functions in this package, future changes to this R package), so this package provides functions for checking profiles for formatting discrepancies and reformatting them if necessary. <code>validate_snowprofile</code> raises errors (or silently print error messages) in case of formatting discrepancies and <code>reformat_snowprofile</code> can conveniently correct data types or rename metadata / layer properties. See examples in the help files for these functions for examples of how it identify and correct errors in malformatted profiles</p>
+<p>Import and constructor functions perform several validation checks
+for consistent structure (e.g. variable names, consistent layer
+thickness/depth/height). Sometimes profiles may be malformatted
+(e.g. files have different formatting than the functions in this
+package, future changes to this R package), so this package provides
+functions for checking profiles for formatting discrepancies and
+reformatting them if necessary. <code>validate_snowprofile</code> raises
+errors (or silently print error messages) in case of formatting
+discrepancies and <code>reformat_snowprofile</code> can conveniently
+correct data types or rename metadata / layer properties. See examples
+in the help files for these functions for examples of how it identify
+and correct errors in malformatted profiles</p>
 </div>
 </div>
 <div id="profile-manipulation" class="section level2">
 <h2>3. Profile manipulation</h2>
-<p><code>print</code>, <code>summary</code>, and <code>rbind</code> methods exist to summarize and extract contents from <code>snowprofile</code> and <code>snowprofileSet</code> objects.</p>
+<p><code>print</code>, <code>summary</code>, and <code>rbind</code>
+methods exist to summarize and extract contents from
+<code>snowprofile</code> and <code>snowprofileSet</code> objects.</p>
 <div id="print" class="section level3">
 <h3>3.1 Print</h3>
 <p>Print contents of a <code>snowprofile</code> to the console.</p>
@@ -317,7 +551,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="summary" class="section level3">
 <h3>3.2 Summary</h3>
-<p>Extract metadata from a single profile or set of profiles into a <code>data.frame</code>.</p>
+<p>Extract metadata from a single profile or set of profiles into a
+<code>data.frame</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Profile)</span></code></pre></div>
 <pre><code>##             station    station_id            datetime      lat       lon elev
 ## 1 SarpOfficeStation niviz_station 2019-02-22 09:24:00 49.27656 -122.9139  339
@@ -326,33 +561,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##   comment_location       date maxObservedDepth
 ## 1  test caaml file 2019-02-22              260</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(SPgroup)</span></code></pre></div>
-<pre><code>##    station station_id            datetime     lat      lon elev angle aspect
-## 1   116093  VIR116093 2019-02-02 05:00:00 52.4650 -118.993 1907     0      0
-## 2   116094  VIR116094 2019-02-02 05:00:00 52.4692 -118.959 1979     0      0
-## 3   116095  VIR116095 2019-02-02 05:00:00 52.4733 -118.924 2011     0      0
-## 4   116096  VIR116096 2019-02-02 05:00:00 52.4774 -118.889 1859     0      0
-## 5   116643  VIR116643 2019-02-02 05:00:00 52.4821 -119.035 1867     0      0
-## 6   116644  VIR116644 2019-02-02 05:00:00 52.4863 -119.000 1969     0      0
-## 7   116645  VIR116645 2019-02-02 05:00:00 52.4904 -118.965 2019     0      0
-## 8   116646  VIR116646 2019-02-02 05:00:00 52.4945 -118.931 1983     0      0
-## 9   117194  VIR117194 2019-02-02 05:00:00 52.5033 -119.042 1915     0      0
-## 10  117197  VIR117197 2019-02-02 05:00:00 52.5157 -118.937 1941     0      0
-## 11  117746  VIR117746 2019-02-02 05:00:00 52.5287 -119.014 1911     0      0
-## 12  117747  VIR117747 2019-02-02 05:00:00 52.5328 -118.979 1957     0      0
-##        hs     type nLayers    zone band       date maxObservedDepth
-## 1  156.48 vstation      50 ALBREDA   TL 2019-02-02           156.48
-## 2  150.41 vstation      44 ALBREDA   TL 2019-02-02           150.41
-## 3  117.89 vstation      35 ALBREDA   TL 2019-02-02           117.89
-## 4  102.42 vstation      35 ALBREDA   TL 2019-02-02           102.42
-## 5  179.87 vstation      45 ALBREDA   TL 2019-02-02           179.87
-## 6  179.22 vstation      55 ALBREDA   TL 2019-02-02           179.22
-## 7  156.85 vstation      39 ALBREDA   TL 2019-02-02           156.85
-## 8  113.26 vstation      32 ALBREDA   TL 2019-02-02           113.26
-## 9  156.02 vstation      44 ALBREDA   TL 2019-02-02           156.02
-## 10 116.94 vstation      37 ALBREDA   TL 2019-02-02           116.94
-## 11 142.78 vstation      41 ALBREDA   TL 2019-02-02           142.78
-## 12 128.56 vstation      34 ALBREDA   TL 2019-02-02           128.56</code></pre>
-<p>Summary methods are useful to extract subsets of a <code>snowprofileSet</code> based on some attribute (e.g. location, time).</p>
+<pre><code>##    station station_id            datetime elev angle aspect     hs     type
+## 1   116093  VIR116093 2019-02-02 05:00:00 1907     0      0 156.48 vstation
+## 2   116094  VIR116094 2019-02-02 05:00:00 1979     0      0 150.41 vstation
+## 3   116095  VIR116095 2019-02-02 05:00:00 2011     0      0 117.89 vstation
+## 4   116096  VIR116096 2019-02-02 05:00:00 1859     0      0 102.42 vstation
+## 5   116643  VIR116643 2019-02-02 05:00:00 1867     0      0 179.87 vstation
+## 6   116644  VIR116644 2019-02-02 05:00:00 1969     0      0 179.22 vstation
+## 7   116645  VIR116645 2019-02-02 05:00:00 2019     0      0 156.85 vstation
+## 8   116646  VIR116646 2019-02-02 05:00:00 1983     0      0 113.26 vstation
+## 9   117194  VIR117194 2019-02-02 05:00:00 1915     0      0 156.02 vstation
+## 10  117197  VIR117197 2019-02-02 05:00:00 1941     0      0 116.94 vstation
+## 11  117746  VIR117746 2019-02-02 05:00:00 1911     0      0 142.78 vstation
+## 12  117747  VIR117747 2019-02-02 05:00:00 1957     0      0 128.56 vstation
+##       zone band       date maxObservedDepth
+## 1  ALBREDA   TL 2019-02-02           156.48
+## 2  ALBREDA   TL 2019-02-02           150.41
+## 3  ALBREDA   TL 2019-02-02           117.89
+## 4  ALBREDA   TL 2019-02-02           102.42
+## 5  ALBREDA   TL 2019-02-02           179.87
+## 6  ALBREDA   TL 2019-02-02           179.22
+## 7  ALBREDA   TL 2019-02-02           156.85
+## 8  ALBREDA   TL 2019-02-02           113.26
+## 9  ALBREDA   TL 2019-02-02           156.02
+## 10 ALBREDA   TL 2019-02-02           116.94
+## 11 ALBREDA   TL 2019-02-02           142.78
+## 12 ALBREDA   TL 2019-02-02           128.56</code></pre>
+<p>Summary methods are useful to extract subsets of a
+<code>snowprofileSet</code> based on some attribute (e.g. location,
+time).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Subset all profiles from SPgroup with elevation &gt; 2000 m</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Metadata <span class="ot">&lt;-</span> <span class="fu">summary</span>(SPgroup)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>Alpine <span class="ot">&lt;-</span> SPgroup[Metadata<span class="sc">$</span>elev <span class="sc">&gt;</span> <span class="dv">2000</span>]</span>
@@ -361,7 +598,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="rbind" class="section level3">
 <h3>3.3 Rbind</h3>
-<p><code>rbind</code> methods merge metadata and layer properties from one or many profiles into a large <code>data.frame</code> that is convenient for analysis tasks.</p>
+<p><code>rbind</code> methods merge metadata and layer properties from
+one or many profiles into a large <code>data.frame</code> that is
+convenient for analysis tasks.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Rbind SPgroup </span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>TabularProfile <span class="ot">&lt;-</span> <span class="fu">rbind</span>(SPgroup)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(TabularProfile)</span></code></pre></div>
@@ -387,19 +626,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>4. Profile visualization</h2>
 <p>Plot methods exist for individual profiles and sets of profiles:</p>
 <ul>
-<li><code>plot.snowprofile</code> produces a hardness profile for a single <code>snowprofile</code> object</li>
-<li><code>plot.snowprofileSet</code> produces several types of plots for a <code>snowprofileSet</code> including timelines and side-by-side stratigraphies</li>
+<li><code>plot.snowprofile</code> produces a hardness profile for a
+single <code>snowprofile</code> object</li>
+<li><code>plot.snowprofileSet</code> produces several types of plots for
+a <code>snowprofileSet</code> including timelines and side-by-side
+stratigraphies</li>
 </ul>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot a single hardness profile</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Profile)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot a timeline</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(SPtimeline)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot all profiles in the group and sort by height</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(SPgroup, <span class="at">SortMethod =</span> <span class="st">&#39;hs&#39;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The package also includes several <code>getColour...</code> and <code>setColour...</code> functions to define colour palettes for various profile properties.</p>
+<p>The package also includes several <code>getColour...</code> and
+<code>setColour...</code> functions to define colour palettes for
+various profile properties.</p>
 </div>
 
 
