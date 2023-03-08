@@ -1,4 +1,7 @@
-# sarp.snowprofile 1.3.1.9000 (under development)
+# sarp.snowprofile 1.3.2
+
+  * Include weibull scaling and crust correction in `computeRTA`
+  * Enfore dependency on R 4.2 (older versions break functionality)
 
 # sarp.snowprofile 1.3.0
 

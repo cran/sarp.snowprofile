@@ -23,6 +23,7 @@
 #' @param colEmphasis the color of the layers to be emphasized (only if you want a different color than defined by `ColParam`)
 #' @param OutlineProfile vector of profile indices that will be outlined to highlight them
 #' @param HorizGrid Draw horizontal grid at layer heights (default = TRUE)
+#' @param VerticalGrid Draw vertical grid at xticks (default = TRUE)
 #' @param yaxis draw a y-axis? (either `FALSE`, `TRUE` draws yaxis left, `"right"` draws yaxis on the right plot side)
 #' *Note* that in case of `"right"` you need to adjust `par(mar = ...)`, disable `ylab` and manually draw an xlab with `mtext`.
 #' @param main Main title
@@ -119,6 +120,7 @@ plot.snowprofileSet <- function(x,
                                 colEmphasis = NA,
                                 OutlineProfile = NULL,
                                 HorizGrid = TRUE,
+                                VerticalGrid = TRUE,
                                 yaxis = TRUE,
                                 main = NA,
                                 ylab = NA,
@@ -404,7 +406,7 @@ plot.snowprofileSet <- function(x,
         Saturdays <- Saturdays[seq(1, length(Saturdays), 4)]
         SaturdayLabels <- SaturdayLabels[seq(1, length(SaturdayLabels), 4)]
       }
-      abline(v = Saturdays, lty = 3, col = "dark grey")
+      if (VerticalGrid) abline(v = Saturdays, lty = 3, col = "dark grey")
       axis(1, at = Saturdays, labels = SaturdayLabels, las = xtick.las)
     }
   }

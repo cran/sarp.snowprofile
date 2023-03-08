@@ -41,13 +41,13 @@ instantly get buried by another layer of the same storm. To make \code{bdate}s m
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{snowprofileSet}: for \link{snowprofileSet}s
+\item \code{deriveDatetag(snowprofileSet)}: for \link{snowprofileSet}s
 
-\item \code{snowprofile}: for \link{snowprofile}s
+\item \code{deriveDatetag(snowprofile)}: for \link{snowprofile}s
 
-\item \code{snowprofileLayers}: for \link{snowprofileLayers}
+\item \code{deriveDatetag(snowprofileLayers)}: for \link{snowprofileLayers}
+
 }}
-
 \examples{
 ## This is not the most meaningful example, but it nicely illustrates the routine:
 print(SPpairs$A_manual)

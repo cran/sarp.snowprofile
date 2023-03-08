@@ -89,11 +89,11 @@ The \code{labelPWL} wrapper function is primarily used by \code{sarp.snowprofile
 }
 \section{Functions}{
 \itemize{
-\item \code{findPWL}: Find layers of interest (e.g., PWLs) in \code{snowprofile} or \code{snowprofileLayers}
+\item \code{findPWL()}: Find layers of interest (e.g., PWLs) in \code{snowprofile} or \code{snowprofileLayers}
 
-\item \code{labelPWL}: Label layers of interest (e.g., weak layers) in \code{snowprofile}
+\item \code{labelPWL()}: Label layers of interest (e.g., weak layers) in \code{snowprofile}
+
 }}
-
 \examples{
 ## get index vector:
 findPWL(SPpairs$A_modeled)

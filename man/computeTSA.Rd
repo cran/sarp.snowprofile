@@ -29,11 +29,11 @@ thresholds based on the \verb{$type} field of the input profile. While \code{man
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{snowprofileSet}: for \link{snowprofileSet}s
+\item \code{computeTSA(snowprofileSet)}: for \link{snowprofileSet}s
 
-\item \code{snowprofile}: for \link{snowprofile}s
+\item \code{computeTSA(snowprofile)}: for \link{snowprofile}s
+
 }}
-
 \examples{
 ## apply function to snowprofileSet
 profileset <- computeTSA(SPgroup)

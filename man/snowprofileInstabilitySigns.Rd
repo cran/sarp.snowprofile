@@ -5,8 +5,8 @@
 \title{Constructor for a snowprofileInstabilitySigns object}
 \usage{
 snowprofileInstabilitySigns(
-  signsFrame = data.frame(type = as.character(NA), present = as.character(NA), comment
-    = as.character(NA)),
+  signsFrame = data.frame(type = as.character(NA), present = as.character(NA), comment =
+    as.character(NA)),
   dropNAs = TRUE
 )
 }

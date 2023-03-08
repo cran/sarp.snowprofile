@@ -19,23 +19,35 @@ computeRTA(x, target = c("interface", "layer"))
 }
 \value{
 The input object will be returned with the new layer properties \code{rta}/\code{rta_interface} describing the RTA index added to the profile layers.
-The index ranges between \verb{[0, 1]}, whereas values > 0.8 indicate structurally unstable layers/interfaces.
 }
 \description{
-Monti, F., & Schweizer, J. (2013). A relative difference approach to detect potential weak layers within a snow profile.
-Proceedings of the 2013 International Snow Science Workshop, Grenoble, France, 339–343. Retrieved from https://arc.lib.montana.edu/snow-science/item.php?id=1861
+The function can compute the RTA index for layers and for interfaces. The calculation follows the example in Monti (2013),
+referenced below. The six individual relative lemons are computed as follows. To compute the RTA index for layers,
+the layer properties are combined with the interface properties of the weakest interface below or above the layer.
+To compute the RTA index for interfaces, the interface properties are combined with the weakest layer properties below
+or above the interface. The six properties considered in the index are
+\itemize{
+\item grain size, hardness, grain type (layer properties)
+\item difference of grain sizes and hardness (at the interface)
+\item depth (at the top interface of the layer)
 }
-\details{
-\strong{NOTE} that this function currently does not yield identical results to the RTA implementation in SNOWPACK.
-High-level patterns agree, though. Working on it..
+
+Instead of implementing a static threshold for the depth weighting, the depth is scaled with a weibull function
+that is corrected for potential crusts and their stabilizing effects (Monti and Mitterer, personal communication).
+
+Note that due to the crust correction, the results from this function will only be correct if applied to profiles
+that have not yet been resampled (such as by functions from sarp.snowprofile.alignment: \code{resampleSP}, \code{resampleSPpairs},
+\code{dtw}, \code{averageSP}).
+
+The RTA index ranges between \verb{[0, 1]}, with the weakest layer/interface euqal to 1. Values > 0.8 indicate layers/interfaces with a poor structural stability.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{snowprofileSet}: for \link{snowprofileSet}s
+\item \code{computeRTA(snowprofileSet)}: for \link{snowprofileSet}s
 
-\item \code{snowprofile}: for \link{snowprofile}s
+\item \code{computeRTA(snowprofile)}: for \link{snowprofile}s
+
 }}
-
 \examples{
 ## apply function to snowprofileSet
 profileset <- computeRTA(SPgroup)
@@ -47,6 +59,10 @@ lines(sp$layers$rta*5, sp$layers$height - 0.5*sp$layers$thickness, type = "b", x
 lines(sp$layers$rta_interface*5, sp$layers$height, type = "b", xlim = c(0, 5), col = "red")
 abline(h = sp$layers$height, lty = "dotted", col = "grey")
 abline(v = 0.8*5, lty = "dashed")
+}
+\references{
+Monti, F., & Schweizer, J. (2013). A relative difference approach to detect potential weak layers within a snow profile.
+Proceedings of the 2013 International Snow Science Workshop, Grenoble, France, 339–343. Retrieved from https://arc.lib.montana.edu/snow-science/item.php?id=1861
 }
 \seealso{
 \link{computeTSA}

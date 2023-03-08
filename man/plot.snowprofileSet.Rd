@@ -20,6 +20,7 @@
   colEmphasis = NA,
   OutlineProfile = NULL,
   HorizGrid = TRUE,
+  VerticalGrid = TRUE,
   yaxis = TRUE,
   main = NA,
   ylab = NA,
@@ -69,6 +70,8 @@ if you want to overplot the grain type sequences with another variable, e.g. a p
 \item{OutlineProfile}{vector of profile indices that will be outlined to highlight them}
 
 \item{HorizGrid}{Draw horizontal grid at layer heights (default = TRUE)}
+
+\item{VerticalGrid}{Draw vertical grid at xticks (default = TRUE)}
 
 \item{yaxis}{draw a y-axis? (either \code{FALSE}, \code{TRUE} draws yaxis left, \code{"right"} draws yaxis on the right plot side)
 \emph{Note} that in case of \code{"right"} you need to adjust \code{par(mar = ...)}, disable \code{ylab} and manually draw an xlab with \code{mtext}.}
